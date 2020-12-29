@@ -17,16 +17,31 @@ import {
 import {
   Grid,
   Toolbar,
+  Table,
   SearchPanel,
   VirtualTable,
   TableHeaderRow,
   PagingPanel,
+  TableColumnResizing
 } from "@devexpress/dx-react-grid-material-ui";
 
 import Button from "@material-ui/core/Button";
 
 import { Loading } from "./loader/Loading";
 import { useQuery, gql } from "@apollo/client";
+
+const CurrencyFormatter = ({ value }) => (
+  <p style={{ fontSize: '12px' , color: '#6C6C6C' , fontWeight: 500 }}>
+    {value}
+  </p>
+);
+
+const CurrencyTypeProvider = props => (
+  <DataTypeProvider
+    formatterComponent={CurrencyFormatter}
+    {...props}
+  />
+);
 
 const EmployeeFormatter = ({ row }) => (
   <div
@@ -97,6 +112,10 @@ export const SearchTable = () => {
 
   const [searchValue, setSearchValue] = useState("%");
 
+  const [currencyColumns] = useState(['investments']);
+
+
+
   const { loading, error, data } = useQuery(GET_INVESTORS, {
     variables: {
       search: searchValue,
@@ -123,33 +142,33 @@ export const SearchTable = () => {
     setSearchValue(value + "%");
   };
 
+  const [tableColumnExtensions] = useState([
+    { columnName: 'photo_thumbnail', width: 200},
+    { columnName: 'investments', wordWrapEnabled: true },
+  ]);
+
   const [employeeColumns] = useState(["photo_thumbnail"]);
 
   return (
     <Paper style={{ position: "relative" }}>
-      {/* <div
-        style={{
-          display: "flex",
-          gap: "14px",
-          alignItems: "center",
-        }}
-      >
-        <h2>INVESTORS</h2>
-        <Button variant="outlined" color="primary">
-          Add Company
-        </Button>
-      </div> */}
       <Grid rows={rows} columns={columns}>
         <DataTypeProvider
           for={employeeColumns}
           formatterComponent={EmployeeFormatter}
         />
-        <PagingState defaultCurrentPage={0} defaultPageSize={5} />
+        <PagingState defaultCurrentPage={0} defaultPageSize={10} />
         <IntegratedPaging />
+        <Table columnExtensions={tableColumnExtensions}/>
+        
 
-        <SearchState onValueChange={typeSearch} />
-        <VirtualTable />
         <TableHeaderRow />
+      
+        <SearchState onValueChange={typeSearch} />
+
+        <CurrencyTypeProvider
+          for={currencyColumns}
+        />
+   
         <Toolbar />
         <SearchPanel />
         <CustomToolbarMarkup />

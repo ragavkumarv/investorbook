@@ -23,7 +23,7 @@ function App() {
 
   return (
     <div className="App">
-      <h2 class="logo">INVESTORBOOK</h2>
+      <h2 className="logo">INVESTORBOOK</h2>
       <div className={classes.root}>
         <Tabs
           value={value}
