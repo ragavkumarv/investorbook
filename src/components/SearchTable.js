@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   SearchState,
   DataTypeProvider,
@@ -10,9 +11,8 @@ import {
 import {
   Plugin,
   Template,
-  TemplatePlaceholder
+  TemplatePlaceholder,
 } from "@devexpress/dx-react-core";
-
 
 import {
   Grid,
@@ -22,7 +22,7 @@ import {
   VirtualTable,
   TableHeaderRow,
   PagingPanel,
-  TableColumnResizing
+  TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
 
 import Button from "@material-ui/core/Button";
@@ -31,16 +31,11 @@ import { Loading } from "./loader/Loading";
 import { useQuery, gql } from "@apollo/client";
 
 const CurrencyFormatter = ({ value }) => (
-  <p style={{ fontSize: '12px' , color: '#6C6C6C' , fontWeight: 500 }}>
-    {value}
-  </p>
+  <p style={{ fontSize: "12px", color: "#6C6C6C", fontWeight: 500 }}>{value}</p>
 );
 
-const CurrencyTypeProvider = props => (
-  <DataTypeProvider
-    formatterComponent={CurrencyFormatter}
-    {...props}
-  />
+const CurrencyTypeProvider = (props) => (
+  <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
 
 const EmployeeFormatter = ({ row }) => (
@@ -70,16 +65,17 @@ const EmployeeFormatter = ({ row }) => (
 const CustomToolbarMarkup = () => (
   <Plugin name="customToolbarMarkup">
     <Template name="toolbarContent">
-      <div style={{
+      <div
+        style={{
           display: "flex",
           gap: "14px",
           alignItems: "center",
-        }}>
-       <h2>INVESTORS</h2>
-       <Button variant="outlined" color="primary">
+        }}
+      >
+        <h2>INVESTORS</h2>
+        <Button variant="outlined" color="primary">
           Add Investor
         </Button>
-
       </div>
 
       <TemplatePlaceholder />
@@ -108,13 +104,28 @@ export const SearchTable = () => {
     { name: "investments", title: "Investments" },
   ]);
 
+  const useStyles = makeStyles({
+    headerRow: {
+      textTransform: "uppercase",
+      fontWeight: 500,
+      fontSize: "12px",
+      lineHeight: "11px",
+      letterSpacing: "0.07em",
+      color: "#797979",
+    },
+  });
+
+  const classes = useStyles();
+
+  const cellComponent = (props) => {
+    return <TableHeaderRow.Cell {...props} className={classes.headerRow} />;
+  };
+
   const [pageSizes] = useState([5, 10, 15]);
 
   const [searchValue, setSearchValue] = useState("%");
 
-  const [currencyColumns] = useState(['investments']);
-
-
+  const [currencyColumns] = useState(["investments"]);
 
   const { loading, error, data } = useQuery(GET_INVESTORS, {
     variables: {
@@ -143,8 +154,8 @@ export const SearchTable = () => {
   };
 
   const [tableColumnExtensions] = useState([
-    { columnName: 'photo_thumbnail', width: 200},
-    { columnName: 'investments', wordWrapEnabled: true },
+    { columnName: "photo_thumbnail", width: 200 },
+    { columnName: "investments", wordWrapEnabled: true },
   ]);
 
   const [employeeColumns] = useState(["photo_thumbnail"]);
@@ -158,17 +169,14 @@ export const SearchTable = () => {
         />
         <PagingState defaultCurrentPage={0} defaultPageSize={10} />
         <IntegratedPaging />
-        <Table columnExtensions={tableColumnExtensions}/>
-        
+        <Table columnExtensions={tableColumnExtensions} />
 
-        <TableHeaderRow />
-      
+        <TableHeaderRow cellComponent={cellComponent}/>
+
         <SearchState onValueChange={typeSearch} />
 
-        <CurrencyTypeProvider
-          for={currencyColumns}
-        />
-   
+        <CurrencyTypeProvider for={currencyColumns} />
+
         <Toolbar />
         <SearchPanel />
         <CustomToolbarMarkup />
