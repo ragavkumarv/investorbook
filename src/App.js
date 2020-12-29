@@ -1,11 +1,13 @@
-import React from 'react';
-import './App.css';
-import Investors from './Investors'
+import React from "react";
+import "./App.css";
+import { SearchTable } from "./components/SearchTable";
+import Investors from "./Investors";
 
 function App() {
   return (
     <div className="App">
-      <Investors />
+      {/* <Investors /> */}
+      <SearchTable />
     </div>
   );
 }
