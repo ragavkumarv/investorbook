@@ -141,7 +141,7 @@ export const SearchTable = () => {
   const [currencyColumns] = useState(["investments"]);
 
   //Paging
-  const [pageSize] = useState(6);
+  const [pageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -162,6 +162,7 @@ export const SearchTable = () => {
         ...detail,
         investments: detail.investments
           .map(({ company }) => company.name)
+          .sort()
           .join(", "),
       }))
     );
