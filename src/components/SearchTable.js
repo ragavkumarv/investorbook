@@ -141,7 +141,7 @@ export const SearchTable = () => {
   const [currencyColumns] = useState(["investments"]);
 
   //Paging
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(pageSizes[1]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -163,7 +163,7 @@ export const SearchTable = () => {
         investments: detail.investments
           .map(({ company }) => company.name)
           .sort()
-          .join(", "),
+          .join(", ")|| 'Yet to Invest',
       }))
     );
     console.log(data.investor_aggregate.aggregate.count);
@@ -194,8 +194,8 @@ export const SearchTable = () => {
           currentPage={currentPage}
           onCurrentPageChange={setCurrentPage}
           pageSize={pageSize}
+          onPageSizeChange={setPageSize}
         />
-        {/* <IntegratedPaging /> */}
         <Table columnExtensions={tableColumnExtensions} />
 
         <TableHeaderRow cellComponent={cellComponent} />
@@ -207,9 +207,10 @@ export const SearchTable = () => {
         <Toolbar />
         <SearchPanel />
         <CustomToolbarMarkup />
+
+        {/* Paging */}
         <CustomPaging totalCount={totalCount} />
-        <PagingPanel />
-        {/* <PagingPanel pageSizes={pageSizes} /> */}
+        <PagingPanel pageSizes={pageSizes} />
       </Grid>
       {loading && <Loading />}
     </Paper>
