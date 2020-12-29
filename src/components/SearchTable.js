@@ -72,7 +72,9 @@ const CustomToolbarMarkup = () => (
           alignItems: "center",
         }}
       >
-        <h2>INVESTORS</h2>
+        <p style={{ fontWeight: 500, fontSize: "28px", lineHeight: "26px" }}>
+          Investors
+        </p>
         <Button variant="outlined" color="primary">
           Add Investor
         </Button>
@@ -171,7 +173,7 @@ export const SearchTable = () => {
         <IntegratedPaging />
         <Table columnExtensions={tableColumnExtensions} />
 
-        <TableHeaderRow cellComponent={cellComponent}/>
+        <TableHeaderRow cellComponent={cellComponent} />
 
         <SearchState onValueChange={typeSearch} />
 

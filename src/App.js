@@ -22,8 +22,8 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h2 className="logo">INVESTORBOOK</h2>
+   <div style={{ position: "relative" }} className="App">
+      <p className="logo"></p>
       <div className={classes.root}>
         <Tabs
           value={value}
