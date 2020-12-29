@@ -6,6 +6,7 @@ import {
   DataTypeProvider,
   PagingState,
   IntegratedPaging,
+  CustomPaging,
 } from "@devexpress/dx-react-grid";
 
 import {
@@ -86,8 +87,12 @@ const CustomToolbarMarkup = () => (
 );
 
 const GET_INVESTORS = gql`
-  query GetInvestors($search: String) {
-    investor(limit: 300, where: { name: { _ilike: $search } }) {
+  query GetInvestors($search: String, $offsetBy: Int, $limitBy: Int) {
+    investor(
+      limit: $limitBy
+      offset: $offsetBy
+      where: { name: { _ilike: $search } }
+    ) {
       investments {
         company {
           name
@@ -96,6 +101,12 @@ const GET_INVESTORS = gql`
       id
       name
       photo_thumbnail
+    }
+
+    investor_aggregate(where: { name: { _ilike: $search } }) {
+      aggregate {
+        count
+      }
     }
   }
 `;
@@ -129,9 +140,16 @@ export const SearchTable = () => {
 
   const [currencyColumns] = useState(["investments"]);
 
+  //Paging
+  const [pageSize] = useState(6);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
   const { loading, error, data } = useQuery(GET_INVESTORS, {
     variables: {
       search: searchValue,
+      limitBy: pageSize,
+      offsetBy: pageSize * currentPage,
     },
   });
 
@@ -147,9 +165,11 @@ export const SearchTable = () => {
           .join(", "),
       }))
     );
+    console.log(data.investor_aggregate.aggregate.count);
+    setTotalCount(data.investor_aggregate.aggregate.count);
   };
 
-  useEffect(() => loadData(), [loading]);
+  useEffect(() => loadData(), [loading, currentPage]);
 
   const typeSearch = (value) => {
     setSearchValue(value + "%");
@@ -169,8 +189,12 @@ export const SearchTable = () => {
           for={employeeColumns}
           formatterComponent={EmployeeFormatter}
         />
-        <PagingState defaultCurrentPage={0} defaultPageSize={10} />
-        <IntegratedPaging />
+        <PagingState
+          currentPage={currentPage}
+          onCurrentPageChange={setCurrentPage}
+          pageSize={pageSize}
+        />
+        {/* <IntegratedPaging /> */}
         <Table columnExtensions={tableColumnExtensions} />
 
         <TableHeaderRow cellComponent={cellComponent} />
@@ -182,7 +206,9 @@ export const SearchTable = () => {
         <Toolbar />
         <SearchPanel />
         <CustomToolbarMarkup />
-        <PagingPanel pageSizes={pageSizes} />
+        <CustomPaging totalCount={totalCount} />
+        <PagingPanel />
+        {/* <PagingPanel pageSizes={pageSizes} /> */}
       </Grid>
       {loading && <Loading />}
     </Paper>
