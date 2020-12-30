@@ -32,9 +32,13 @@ import { Loading } from "./loader/Loading";
 import { useQuery, gql } from "@apollo/client";
 
 const State = {
-  addButton: 'Add Company',
-  heading: 'Companies'
-}
+  addButton: "Add Company",
+  heading: "Companies",
+  columns: [
+    { name: "name", title: "Name" },
+    { name: "investors", title: "Investors" },
+  ]
+};
 
 const CurrencyFormatter = ({ value }) => (
   <p style={{ fontSize: "12px", color: "#6C6C6C", fontWeight: 500 }}>{value}</p>
@@ -52,9 +56,9 @@ const EmployeeFormatter = ({ row }) => (
       alignItems: "center",
     }}
   >
-    <div>
+    {/* <div>
       <img
-        src={row.photo_thumbnail}
+        src={row.name}
         style={{
           height: "38px",
           width: "38px",
@@ -63,7 +67,7 @@ const EmployeeFormatter = ({ row }) => (
         }}
         alt="Avatar"
       />
-    </div>
+    </div> */}
     {row.name}
   </div>
 );
@@ -93,22 +97,21 @@ const CustomToolbarMarkup = () => (
 
 const GET_INVESTORS = gql`
   query GetInvestors($search: String, $offsetBy: Int, $limitBy: Int) {
-    investor(
+    company(
       limit: $limitBy
       offset: $offsetBy
       where: { name: { _ilike: $search } }
     ) {
       investments {
-        company {
+        investor {
           name
         }
       }
       id
       name
-      photo_thumbnail
     }
 
-    investor_aggregate(where: { name: { _ilike: $search } }) {
+    company_aggregate(where: { name: { _ilike: $search } }) {
       aggregate {
         count
       }
@@ -117,10 +120,7 @@ const GET_INVESTORS = gql`
 `;
 
 export const ListCompanies = () => {
-  const [columns] = useState([
-    { name: "photo_thumbnail", title: "Name" },
-    { name: "investments", title: "Investments" },
-  ]);
+  const [columns] = useState(State.columns);
 
   const useStyles = makeStyles({
     headerRow: {
@@ -143,7 +143,7 @@ export const ListCompanies = () => {
 
   const [searchValue, setSearchValue] = useState("%");
 
-  const [currencyColumns] = useState(["investments"]);
+  const [currencyColumns] = useState([State.columns[1].name]);
 
   //Paging
   const [pageSize, setPageSize] = useState(pageSizes[1]);
@@ -163,16 +163,16 @@ export const ListCompanies = () => {
   const loadData = () => {
     if (rows && !data) return;
     setRows(
-      data.investor.map((detail) => ({
+      data.company.map((detail) => ({
         ...detail,
-        investments: detail.investments
-          .map(({ company }) => company.name)
-          .sort()
-          .join(", ")|| 'Yet to Invest',
+        [State.columns[1].name]:
+          detail.investments
+            .map(({ investor }) => investor.name)
+            .sort()
+            .join(", ") || "Yet to Invest",
       }))
     );
-    console.log(data.investor_aggregate.aggregate.count);
-    setTotalCount(data.investor_aggregate.aggregate.count);
+    setTotalCount(data.company_aggregate.aggregate.count);
   };
 
   useEffect(() => loadData(), [loading, currentPage]);
@@ -182,11 +182,11 @@ export const ListCompanies = () => {
   };
 
   const [tableColumnExtensions] = useState([
-    { columnName: "photo_thumbnail", width: 200 },
-    { columnName: "investments", wordWrapEnabled: true },
+    { columnName: State.columns[0].name, width: 200 },
+    { columnName: State.columns[1].name, wordWrapEnabled: true },
   ]);
 
-  const [employeeColumns] = useState(["photo_thumbnail"]);
+  const [employeeColumns] = useState([State.columns[1].name]);
 
   return (
     <Paper style={{ position: "relative" }}>
