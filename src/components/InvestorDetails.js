@@ -39,8 +39,9 @@ import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import { useHistory, useParams } from 'react-router-dom';
 
-const INVESTOR_ID = 100;
+// const INVESTOR_ID = 100;
 
 const Popup = ({
   row,
@@ -451,7 +452,10 @@ const DELETE_INVESTOR = gql`
 `;
 
 export const InvestorDetails = () => {
+  const { id: INVESTOR_ID } = useParams();
   const [columns] = useState(State.columns);
+  const history = useHistory();
+
   const [addInvestment] = useMutation(ADD_INVESTMENT, {
     refetchQueries: [
       {
@@ -537,7 +541,8 @@ export const InvestorDetails = () => {
   });
 
   const removeInvestor = () => {
-    deleteInvestorMutation({variables:{id: INVESTOR_ID}})
+    deleteInvestorMutation({variables:{id: INVESTOR_ID}});
+    history.push('/');
   }
 
   const saveInvestor = () => {

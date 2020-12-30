@@ -7,6 +7,7 @@ import {
   PagingState,
   IntegratedPaging,
   CustomPaging,
+  SelectionState
 } from "@devexpress/dx-react-grid";
 
 import {
@@ -24,7 +25,9 @@ import {
   TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
+  TableSelection
 } from "@devexpress/dx-react-grid-material-ui";
+import { useHistory } from 'react-router-dom';
 
 import Button from "@material-ui/core/Button";
 
@@ -38,6 +41,21 @@ const CurrencyFormatter = ({ value }) => (
 const CurrencyTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
+
+const TableRow = ({ tableRow, onToggle, ...restProps }) => {
+  const history = useHistory();
+  return (
+    <TableSelection.Row
+      {...restProps}
+      onClick={() => {
+        onToggle();
+        console.log(tableRow);
+        history.push(`/investor/${tableRow.row.id}`)
+        // alert(JSON.stringify(tableRow));
+      }}
+    />
+  );
+};
 
 const EmployeeFormatter = ({ row }) => (
   <div
@@ -136,7 +154,7 @@ export const ListInvestors = () => {
 
   const [pageSizes] = useState([5, 10, 15]);
 
-  const [searchValue, setSearchValue] = useState("%");
+  const [searchValue, setSearchValue] = useState("%%");
 
   const [currencyColumns] = useState(["investments"]);
 
@@ -199,6 +217,13 @@ export const ListInvestors = () => {
         <Table columnExtensions={tableColumnExtensions} />
 
         <TableHeaderRow cellComponent={cellComponent} />
+        <SelectionState />
+        <TableSelection
+            selectByRowClick
+            highlightRow
+            rowComponent={TableRow}
+            showSelectionColumn={false}
+          />
 
         <SearchState onValueChange={typeSearch} />
 

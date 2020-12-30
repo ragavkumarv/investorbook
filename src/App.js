@@ -7,32 +7,35 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import Home from "./Home";
+import { Switch, Route, useHistory } from "react-router-dom";
 
-const useStyles = makeStyles({
-  root: {
-    flexGrow: 1,
-  },
-});
+// const useStyles = makeStyles({
+//   root: {
+//     flexGrow: 1,
+//   },
+// });
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+// function TabPanel(props) {
+//   const { children, value, index, ...other } = props;
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`wrapped-tabpanel-${index}`}
-      aria-labelledby={`wrapped-tab-${index}`}
-      {...other}
-    >
-      {value === index && props.children}
-    </div>
-  );
-}
+//   return (
+//     <div
+//       role="tabpanel"
+//       hidden={value !== index}
+//       id={`wrapped-tabpanel-${index}`}
+//       aria-labelledby={`wrapped-tab-${index}`}
+//       {...other}
+//     >
+//       {value === index && props.children}
+//     </div>
+//   );
+// }
 
 function App() {
-  const classes = useStyles();
+  // const classes = useStyles();
   const [value, setValue] = useState(0);
+  const history = useHistory();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -40,25 +43,24 @@ function App() {
 
   return (
     <div style={{ position: "relative" }} className="App">
-      <p className="logo"></p>
-      <div className={classes.root}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Investors" />
-          <Tab label="Companies" />
-        </Tabs>
-        <TabPanel value={value} index={0}>
-          {/* <ListInvestors /> */}
+      <p className="logo" onClick={(e) => history.push("/")}></p>
+      <Switch>
+        <Route path="/investor/:id">
           <InvestorDetails />
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <ListCompanies />
-        </TabPanel>
-      </div>
+        </Route>
+        <Route path="/investors">
+          <Home />
+        </Route>
+        <Route path="/companies">
+          <Home />
+        </Route>
+        <Route path="/">
+          <Home />
+        </Route>
+        <Route path="**">
+          <Home />
+        </Route>
+      </Switch>
     </div>
   );
 }
