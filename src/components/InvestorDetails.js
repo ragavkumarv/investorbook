@@ -40,6 +40,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 
+const INVESTOR_ID = 100;
+
 const Popup = ({
   row,
   onChange,
@@ -312,7 +314,7 @@ const CustomToolbarMarkup = () => (
   </Plugin>
 );
 
-const InvestorSummary = ({ investor, total, setOpen }) => {
+const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "80px 6fr 2fr" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -341,7 +343,7 @@ const InvestorSummary = ({ investor, total, setOpen }) => {
         <Button onClick={() => setOpen(true)} startIcon={<EditIcon />}>
           EDIT NAME
         </Button>
-        <Button startIcon={<DeleteIcon />}>REMOVE INVESTOR</Button>
+        <Button onClick={() => removeInvestor() } startIcon={<DeleteIcon />}>REMOVE INVESTOR</Button>
       </div>
     </div>
   );
@@ -440,6 +442,14 @@ const DELETE_INVESTMENT = gql`
   }
 `;
 
+const DELETE_INVESTOR = gql`
+  mutation DeleteInvestor($id: Int) {
+    delete_investor(where: { id: { _eq: $id } }) {
+      affected_rows
+    }
+  }
+`;
+
 export const InvestorDetails = () => {
   const [columns] = useState(State.columns);
   const [addInvestment] = useMutation(ADD_INVESTMENT, {
@@ -447,7 +457,7 @@ export const InvestorDetails = () => {
       {
         query: GET_INVESTOR_DETAIL,
         variables: {
-          id: 68,
+          id: INVESTOR_ID,
         },
       },
     ],
@@ -460,7 +470,7 @@ export const InvestorDetails = () => {
       {
         query: GET_INVESTOR_DETAIL,
         variables: {
-          id: 68,
+          id: INVESTOR_ID,
         },
       },
     ],
@@ -471,18 +481,20 @@ export const InvestorDetails = () => {
       {
         query: GET_INVESTOR_DETAIL,
         variables: {
-          id: 68,
+          id: INVESTOR_ID,
         },
       },
     ],
   });
+
+  const [deleteInvestorMutation] = useMutation(DELETE_INVESTOR);
 
   const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
     refetchQueries: [
       {
         query: GET_INVESTOR_DETAIL,
         variables: {
-          id: 68,
+          id: INVESTOR_ID,
         },
       },
     ],
@@ -509,7 +521,7 @@ export const InvestorDetails = () => {
 
   const { loading, error, data, refetch } = useQuery(GET_INVESTOR_DETAIL, {
     variables: {
-      id: 68,
+      id: INVESTOR_ID,
     },
   });
 
@@ -524,11 +536,15 @@ export const InvestorDetails = () => {
     photoLarge: "",
   });
 
+  const removeInvestor = () => {
+    deleteInvestorMutation({variables:{id: INVESTOR_ID}})
+  }
+
   const saveInvestor = () => {
     // console.log(state);
     updateInvestor({
       variables: {
-        id: 68,
+        id: INVESTOR_ID,
         name: state.name,
         photo_large: state.photoLarge,
         photo_thumbnail: state.photoThumbnail,
@@ -543,7 +559,7 @@ export const InvestorDetails = () => {
       addInvestment({
         variables: {
           amount: +newRow.amount,
-          investor_id: 68,
+          investor_id: INVESTOR_ID,
           company_id: newRow.companyId,
         },
       });
@@ -584,7 +600,6 @@ export const InvestorDetails = () => {
 
     const { id, name, photo_large, photo_thumbnail } = data.investor[0];
 
-    // setState({id, name, photo_large, photo_thumbnail});
     setState({
       id,
       name,
@@ -615,6 +630,7 @@ export const InvestorDetails = () => {
         investor={data ? data.investor[0] : { name: "", photo_large: "" }}
         total={total}
         setOpen={setOpenEditInvestor}
+        removeInvestor={removeInvestor}
       />
 
       <Grid rows={rows} columns={columns} getRowId={getRowId}>
