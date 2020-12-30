@@ -112,114 +112,154 @@ const Popup = ({
   );
 };
 
-const UPDATE_INVESTMENT = gql`
-  mutation UpdateInvestment($id: Int, $amount: numeric, $company_id: Int) {
-    update_investment(
-      where: { id: { _eq: $id } }
-      _set: { amount: $amount, company_id: $company_id }
-    ) {
-      affected_rows
-      returning {
-        amount
-        company {
-          name
-        }
-      }
-    }
-  }
-`;
+const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.value });
+  };
 
-const PopupEditing = React.memo(
-  ({ popupComponent: Popup, refresh, updateInvestment, allCompanies }) => {
-    const [open, setOpen] = useState(false);
+  const { name, photoThumbnail, photoLarge } = state;
 
-    // useEffect(() => {
-    //   setOpen(true)
-    // },[])
+  return (
+    <Dialog
+      open={open}
+      // onClose={onCancelChanges}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">Edit Investor</DialogTitle>
+      <DialogContent>
+        <p>Please enter the details of the investor.</p>
+        <FormGroup style={{ gap: "20px" }}>
+          <TextField
+            style={{ width: "500px" }}
+            name="name"
+            value={name}
+            onChange={handleChange}
+            label="Name"
+          />
+          <TextField
+            style={{ width: "500px" }}
+            name="photoThumbnail"
+            value={photoThumbnail}
+            onChange={handleChange}
+            label="Photo thumbnail"
+          />
+          <TextField
+            style={{ width: "500px" }}
+            name="photoLarge"
+            value={photoLarge}
+            onChange={handleChange}
+            label="Photo large"
+          />
+        </FormGroup>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => {
+            setOpen(false);
+          }}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setOpen(false);
+            saveInvestor();
+          }}
+          color="primary"
+          disableElevation
+        >
+          Edit Investor
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
-    return (
-      <Plugin>
-        <Template name="popupEditing">
-          <TemplateConnector>
-            {(
-              {
-                addedRows,
-                rows,
-                getRowId,
-                editingRowIds,
-                createRowChange,
-                rowChanges,
-              },
-              {
-                changeRow,
-                commitChangedRows,
-                stopEditRows,
-                cancelAddedRows,
-                commitAddedRows,
-                changeAddedRow,
+const PopupEditing = React.memo(({ popupComponent: Popup, allCompanies }) => {
+  return (
+    <Plugin>
+      <Template name="popupEditing">
+        <TemplateConnector>
+          {(
+            {
+              addedRows,
+              rows,
+              getRowId,
+              editingRowIds,
+              createRowChange,
+              rowChanges,
+            },
+            {
+              changeRow,
+              commitChangedRows,
+              stopEditRows,
+              cancelAddedRows,
+              commitAddedRows,
+              changeAddedRow,
+            }
+          ) => {
+            const isAddMode = addedRows.length > 0;
+            const isEditMode = editingRowIds.length > 0;
+
+            const editRowId = editingRowIds[0] || 0;
+
+            const open = isEditMode || isAddMode;
+            const targetRow = rows.filter(
+              (row) => getRowId(row) === editRowId
+            )[0];
+            const changedRow = isAddMode
+              ? addedRows[0]
+              : { ...targetRow, ...rowChanges[editRowId] };
+
+            const processValueChange = (fieldName, newValue) => {
+              const changeArgs = {
+                rowId: editRowId,
+                change: createRowChange(changedRow, newValue, fieldName),
+              };
+
+              if (isAddMode) {
+                changeAddedRow(changeArgs);
+              } else {
+                changeRow(changeArgs);
               }
-            ) => {
-              const isAddMode = addedRows.length > 0;
-              const isEditMode = editingRowIds.length > 0;
+            };
+            const applyChanges = () => {
+              if (isEditMode) {
+                commitChangedRows({ rowIds: editingRowIds });
+              } else {
+                commitAddedRows({ rowIds: [0] });
+              }
+              stopEditRows({ rowIds: editingRowIds });
+            };
+            const cancelChanges = () => {
+              if (isAddMode) {
+                cancelAddedRows({ rowIds: [0] });
+              }
+              stopEditRows({ rowIds: editingRowIds });
+            };
 
-              const editRowId = editingRowIds[0] || 0;
-
-              const open = isEditMode || isAddMode;
-              const targetRow = rows.filter(
-                (row) => getRowId(row) === editRowId
-              )[0];
-              const changedRow = isAddMode
-                ? addedRows[0]
-                : { ...targetRow, ...rowChanges[editRowId] };
-
-              const processValueChange = (fieldName, newValue) => {
-                const changeArgs = {
-                  rowId: editRowId,
-                  change: createRowChange(changedRow, newValue, fieldName),
-                };
-
-                if (isAddMode) {
-                  changeAddedRow(changeArgs);
-                } else {
-                  changeRow(changeArgs);
-                }
-              };
-              const applyChanges = () => {
-                if (isEditMode) {
-                  commitChangedRows({ rowIds: editingRowIds });
-                } else {
-                  commitAddedRows({ rowIds: [0] });
-                }
-                stopEditRows({ rowIds: editingRowIds });
-              };
-              const cancelChanges = () => {
-                if (isAddMode) {
-                  cancelAddedRows({ rowIds: [0] });
-                }
-                stopEditRows({ rowIds: editingRowIds });
-              };
-
-              return (
-                <Popup
-                  open={open}
-                  row={changedRow}
-                  onChange={processValueChange}
-                  onApplyChanges={applyChanges}
-                  onCancelChanges={cancelChanges}
-                  allCompanies={allCompanies}
-                />
-              );
-            }}
-          </TemplateConnector>
-        </Template>
-        <Template name="root">
-          <TemplatePlaceholder />
-          <TemplatePlaceholder name="popupEditing" />
-        </Template>
-      </Plugin>
-    );
-  }
-);
+            return (
+              <Popup
+                open={open}
+                row={changedRow}
+                onChange={processValueChange}
+                onApplyChanges={applyChanges}
+                onCancelChanges={cancelChanges}
+                allCompanies={allCompanies}
+              />
+            );
+          }}
+        </TemplateConnector>
+      </Template>
+      <Template name="root">
+        <TemplatePlaceholder />
+        <TemplatePlaceholder name="popupEditing" />
+      </Template>
+    </Plugin>
+  );
+});
 
 const State = {
   addButton: "+ Add Investments",
@@ -265,9 +305,6 @@ const CustomToolbarMarkup = () => (
         <p style={{ fontWeight: 500, fontSize: "15px", lineHeight: "14px" }}>
           {State.heading}
         </p>
-        {/* <Button variant="outlined" color="primary">
-          {State.addButton}
-        </Button> */}
       </div>
 
       <TemplatePlaceholder />
@@ -275,25 +312,7 @@ const CustomToolbarMarkup = () => (
   </Plugin>
 );
 
-const GET_INVESTOR_DETAIL = gql`
-  query GetInvestorDetail($id: Int) {
-    investor(where: { id: { _eq: $id } }) {
-      id
-      name
-      photo_large
-      investments(order_by: {created_at: desc}) {
-        id
-        amount
-        company {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-const InvestorSummary = ({ investor, total }) => {
+const InvestorSummary = ({ investor, total, setOpen }) => {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "80px 6fr 2fr" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -319,29 +338,14 @@ const InvestorSummary = ({ investor, total }) => {
         </p>
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <Button startIcon={<EditIcon />}>EDIT NAME</Button>
+        <Button onClick={() => setOpen(true)} startIcon={<EditIcon />}>
+          EDIT NAME
+        </Button>
         <Button startIcon={<DeleteIcon />}>REMOVE INVESTOR</Button>
       </div>
     </div>
   );
 };
-
-const DELETE_INVESTMENT = gql`
-  mutation DeleteInvestment($id: Int) {
-    delete_investment(where: { id: { _eq: $id } }) {
-      affected_rows
-    }
-  }
-`;
-
-const GET_ALL_COMPANIES = gql`
-  query GetAllCompanies {
-    company(distinct_on: name) {
-      id
-      name
-    }
-  }
-`;
 
 const ADD_INVESTMENT = gql`
   mutation AddInvestment(
@@ -363,9 +367,81 @@ const ADD_INVESTMENT = gql`
   }
 `;
 
+const GET_INVESTOR_DETAIL = gql`
+  query GetInvestorDetail($id: Int) {
+    investor(where: { id: { _eq: $id } }) {
+      id
+      name
+      photo_large
+      photo_thumbnail
+      investments(order_by: { created_at: desc }) {
+        id
+        amount
+        company {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const GET_ALL_COMPANIES = gql`
+  query GetAllCompanies {
+    company(distinct_on: name) {
+      id
+      name
+    }
+  }
+`;
+
+const UPDATE_INVESTMENT = gql`
+  mutation UpdateInvestment($id: Int, $amount: numeric, $company_id: Int) {
+    update_investment(
+      where: { id: { _eq: $id } }
+      _set: { amount: $amount, company_id: $company_id }
+    ) {
+      affected_rows
+      returning {
+        amount
+        company {
+          name
+        }
+      }
+    }
+  }
+`;
+
+const UPDATE_INVESTOR = gql`
+  mutation UpdateInvestor(
+    $id: Int
+    $name: String
+    $photo_large: String
+    $photo_thumbnail: String
+  ) {
+    update_investor(
+      where: { id: { _eq: $id } }
+      _set: {
+        name: $name
+        photo_large: $photo_large
+        photo_thumbnail: $photo_thumbnail
+      }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
+const DELETE_INVESTMENT = gql`
+  mutation DeleteInvestment($id: Int) {
+    delete_investment(where: { id: { _eq: $id } }) {
+      affected_rows
+    }
+  }
+`;
+
 export const InvestorDetails = () => {
   const [columns] = useState(State.columns);
-  const { data: allCompanies } = useQuery(GET_ALL_COMPANIES);
   const [addInvestment] = useMutation(ADD_INVESTMENT, {
     refetchQueries: [
       {
@@ -377,7 +453,9 @@ export const InvestorDetails = () => {
     ],
   });
 
-  const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
+  const { data: allCompanies } = useQuery(GET_ALL_COMPANIES);
+
+  const [updateInvestment] = useMutation(UPDATE_INVESTMENT, {
     refetchQueries: [
       {
         query: GET_INVESTOR_DETAIL,
@@ -388,7 +466,18 @@ export const InvestorDetails = () => {
     ],
   });
 
-  const [updateInvestment] = useMutation(UPDATE_INVESTMENT, {
+  const [updateInvestor] = useMutation(UPDATE_INVESTOR, {
+    refetchQueries: [
+      {
+        query: GET_INVESTOR_DETAIL,
+        variables: {
+          id: 68,
+        },
+      },
+    ],
+  });
+
+  const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
     refetchQueries: [
       {
         query: GET_INVESTOR_DETAIL,
@@ -427,6 +516,26 @@ export const InvestorDetails = () => {
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
 
+  const [openEditInvestor, setOpenEditInvestor] = useState(false);
+
+  const [state, setState] = useState({
+    name: "",
+    photoThumbnail: "",
+    photoLarge: "",
+  });
+
+  const saveInvestor = () => {
+    // console.log(state);
+    updateInvestor({
+      variables: {
+        id: 68,
+        name: state.name,
+        photo_large: state.photoLarge,
+        photo_thumbnail: state.photoThumbnail,
+      },
+    });
+  };
+
   const commitChanges = ({ added, changed, deleted }) => {
     console.log(added, changed, deleted, rows);
     if (added) {
@@ -456,7 +565,6 @@ export const InvestorDetails = () => {
   const getRowId = (row) => row.id;
 
   const loadData = () => {
-    console.log("nice");
     if (rows && !data) return;
 
     setRows(
@@ -473,6 +581,16 @@ export const InvestorDetails = () => {
         .map((detail) => detail.amount)
         .reduce((i, sum) => i + sum, 0)
     );
+
+    const { id, name, photo_large, photo_thumbnail } = data.investor[0];
+
+    // setState({id, name, photo_large, photo_thumbnail});
+    setState({
+      id,
+      name,
+      photoLarge: photo_large,
+      photoThumbnail: photo_thumbnail,
+    });
   };
 
   useEffect(() => loadData(), [data]);
@@ -486,9 +604,17 @@ export const InvestorDetails = () => {
 
   return (
     <Paper style={{ position: "relative" }}>
+      <EditInvestor
+        open={openEditInvestor}
+        setOpen={setOpenEditInvestor}
+        state={state}
+        setState={setState}
+        saveInvestor={saveInvestor}
+      />
       <InvestorSummary
         investor={data ? data.investor[0] : { name: "", photo_large: "" }}
         total={total}
+        setOpen={setOpenEditInvestor}
       />
 
       <Grid rows={rows} columns={columns} getRowId={getRowId}>
