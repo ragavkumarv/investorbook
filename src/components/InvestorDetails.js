@@ -37,9 +37,8 @@ import FormControl from "@material-ui/core/FormControl";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
 
 const Popup = ({
   row,
@@ -62,8 +61,8 @@ const Popup = ({
         <p>Please enter the details of the investment.</p>
 
         <FormGroup>
-          <FormControl >
-            <InputLabel >Select Company</InputLabel>
+          <FormControl>
+            <InputLabel>Select Company</InputLabel>
             <Select
               value={row.companyId || ""}
               onChange={(event) => onChange("companyId", event.target.value)}
@@ -115,7 +114,10 @@ const Popup = ({
 
 const UPDATE_INVESTMENT = gql`
   mutation UpdateInvestment($id: Int, $amount: numeric, $company_id: Int) {
-    update_investment(where: { id: { _eq: $id } }, _set: { amount: $amount, company_id: $company_id }) {
+    update_investment(
+      where: { id: { _eq: $id } }
+      _set: { amount: $amount, company_id: $company_id }
+    ) {
       affected_rows
       returning {
         amount
@@ -279,7 +281,7 @@ const GET_INVESTOR_DETAIL = gql`
       id
       name
       photo_large
-      investments {
+      investments(order_by: {created_at: desc}) {
         id
         amount
         company {
@@ -341,9 +343,61 @@ const GET_ALL_COMPANIES = gql`
   }
 `;
 
+const ADD_INVESTMENT = gql`
+  mutation AddInvestment(
+    $amount: numeric
+    $investor_id: Int
+    $company_id: Int
+  ) {
+    insert_investment(
+      objects: {
+        amount: $amount
+        investor_id: $investor_id
+        company_id: $company_id
+      }
+    ) {
+      returning {
+        id
+      }
+    }
+  }
+`;
+
 export const InvestorDetails = () => {
   const [columns] = useState(State.columns);
   const { data: allCompanies } = useQuery(GET_ALL_COMPANIES);
+  const [addInvestment] = useMutation(ADD_INVESTMENT, {
+    refetchQueries: [
+      {
+        query: GET_INVESTOR_DETAIL,
+        variables: {
+          id: 68,
+        },
+      },
+    ],
+  });
+
+  const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
+    refetchQueries: [
+      {
+        query: GET_INVESTOR_DETAIL,
+        variables: {
+          id: 68,
+        },
+      },
+    ],
+  });
+
+  const [updateInvestment] = useMutation(UPDATE_INVESTMENT, {
+    refetchQueries: [
+      {
+        query: GET_INVESTOR_DETAIL,
+        variables: {
+          id: 68,
+        },
+      },
+    ],
+  });
 
   const useStyles = makeStyles({
     headerRow: {
@@ -370,77 +424,33 @@ export const InvestorDetails = () => {
     },
   });
 
-  const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
-    refetchQueries: [
-      {
-        query: GET_INVESTOR_DETAIL,
-        variables: {
-          id: 68,
-        },
-      },
-    ],
-  });
-
-  const [updateInvestment] = useMutation(UPDATE_INVESTMENT, {
-    refetchQueries: [
-      {
-        query: GET_INVESTOR_DETAIL,
-        variables: {
-          id: 68,
-        },
-      },
-    ],
-  });
-
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
 
   const commitChanges = ({ added, changed, deleted }) => {
     console.log(added, changed, deleted, rows);
-    let changedRows;
     if (added) {
-      // const startingAddedId =
-      //   rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
-      // changedRows = [
-      //   ...rows,
-      //   ...added.map((row, index) => ({
-      //     id: startingAddedId + index,
-      //     ...row,
-      //   })),
-      // ];
-
-      // updateInvestment(added[0]);
-
-      console.log(added);
+      const [newRow] = added;
+      addInvestment({
+        variables: {
+          amount: +newRow.amount,
+          investor_id: 68,
+          company_id: newRow.companyId,
+        },
+      });
     }
     if (changed) {
-      // changedRows = rows.map((row) => {
-      //   console.log(changed, changed[row.id]);
-      //   return changed[row.id] ? { ...row, ...changed[row.id] } : row;
-      // });
       const exitingData = rows.find((row) => changed[row.id]);
       const editRow = { ...exitingData, ...changed[exitingData.id] };
-
-      //  console.log('edit', editRow)
-
       updateInvestment({
         variables: {
           id: editRow.id,
           amount: editRow.amount,
-          company_id: editRow.companyId
+          company_id: editRow.companyId,
         },
       });
-
-      // updateInvestment()
     }
-    // if (added || changed) {
-    //   setRows(changedRows);
-
-    // }
-
     if (deleted) deleteInvestmentMutation({ variables: { id: deleted[0] } });
-
-    console.log(added, changed, rows);
   };
 
   const getRowId = (row) => row.id;
