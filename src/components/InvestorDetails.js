@@ -1,4 +1,4 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import {
   Plugin,
   Template,
@@ -33,133 +33,191 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
+import FormControl from "@material-ui/core/FormControl";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
-const Popup = ({ row, onChange, onApplyChanges, onCancelChanges, open }) => (
-  <Dialog
-    open={open}
-    onClose={onCancelChanges}
-    aria-labelledby="form-dialog-title"
-  >
-    <DialogTitle id="form-dialog-title">Add Investment</DialogTitle>
-    <DialogContent>
-      <p>Please enter the details of the investment.</p>
 
-      <FormGroup>
-        <TextField
-          margin="normal"
-          name="company"
-          label="Select Company"
-          value={row.name || ""}
-          onChange={onChange}
-        />
-        <TextField
-          margin="normal"
-          name="amount"
-          label="Investment Amount"
-          value={row.amount || ""}
-          onChange={onChange}
-        />
-      </FormGroup>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={onCancelChanges} color="primary">
-        Cancel
-      </Button>
-      <Button
-        variant="contained"
-        onClick={onApplyChanges}
-        color="primary"
-        disableElevation
-      >
-        Add Company
-      </Button>
-    </DialogActions>
-  </Dialog>
-);
+const Popup = ({
+  row,
+  onChange,
+  onApplyChanges,
+  onCancelChanges,
+  open,
+  refresh,
+  allCompanies,
+}) => {
+  console.log(row, allCompanies);
+  return (
+    <Dialog
+      open={open}
+      onClose={onCancelChanges}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">Add Investment</DialogTitle>
+      <DialogContent>
+        <p>Please enter the details of the investment.</p>
 
-const PopupEditing = React.memo(({ popupComponent: Popup }) => (
-  <Plugin>
-    <Template name="popupEditing">
-      <TemplateConnector>
-        {(
-          {
-            rows,
-            getRowId,
-            addedRows,
-            editingRowIds,
-            createRowChange,
-            rowChanges,
-          },
-          {
-            changeRow,
-            changeAddedRow,
-            commitChangedRows,
-            commitAddedRows,
-            stopEditRows,
-            cancelAddedRows,
-            cancelChangedRows,
-          }
-        ) => {
-          const isNew = addedRows.length > 0;
-          let editedRow;
-          let rowId;
-          if (isNew) {
-            rowId = 0;
-            editedRow = addedRows[rowId];
-          } else {
-            [rowId] = editingRowIds;
-            const targetRow = rows.filter((row) => getRowId(row) === rowId)[0];
-            editedRow = { ...targetRow, ...rowChanges[rowId] };
-          }
-
-          const processValueChange = ({ target: { name, value } }) => {
-            const changeArgs = {
-              rowId,
-              change: createRowChange(editedRow, value, name),
-            };
-            if (isNew) {
-              changeAddedRow(changeArgs);
-            } else {
-              changeRow(changeArgs);
-            }
-          };
-          const rowIds = isNew ? [0] : editingRowIds;
-          const applyChanges = () => {
-            if (isNew) {
-              commitAddedRows({ rowIds });
-            } else {
-              stopEditRows({ rowIds });
-              commitChangedRows({ rowIds });
-            }
-          };
-          const cancelChanges = () => {
-            if (isNew) {
-              cancelAddedRows({ rowIds });
-            } else {
-              stopEditRows({ rowIds });
-              cancelChangedRows({ rowIds });
-            }
-          };
-
-          const open = editingRowIds.length > 0 || isNew;
-          return (
-            <Popup
-              open={open}
-              row={editedRow}
-              onChange={processValueChange}
-              onApplyChanges={applyChanges}
-              onCancelChanges={cancelChanges}
+        <FormGroup>
+          <FormControl >
+            <InputLabel >Select Company</InputLabel>
+            <Select
+              value={row.companyId || ""}
+              onChange={(event) => onChange("companyId", event.target.value)}
+            >
+              {(allCompanies ? allCompanies.company : []).map((company) => (
+                <MenuItem value={company.id}>{company.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel>Amount</InputLabel>
+            <Input
+              id="standard-adornment-amount"
+              type="number"
+              value={row.amount || ""}
+              onChange={(event) => onChange("amount", event.target.value)}
+              startAdornment={
+                <InputAdornment position="start">$</InputAdornment>
+              }
             />
-          );
-        }}
-      </TemplateConnector>
-    </Template>
-    <Template name="root">
-      <TemplatePlaceholder />
-      <TemplatePlaceholder name="popupEditing" />
-    </Template>
-  </Plugin>
-));
+          </FormControl>
+        </FormGroup>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => {
+            onCancelChanges();
+            // refresh();
+          }}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            // onApplyChanges({ ...row, amount})
+            onApplyChanges();
+          }}
+          color="primary"
+          disableElevation
+        >
+          Add Company
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const UPDATE_INVESTMENT = gql`
+  mutation UpdateInvestment($id: Int, $amount: numeric, $company_id: Int) {
+    update_investment(where: { id: { _eq: $id } }, _set: { amount: $amount, company_id: $company_id }) {
+      affected_rows
+      returning {
+        amount
+        company {
+          name
+        }
+      }
+    }
+  }
+`;
+
+const PopupEditing = React.memo(
+  ({ popupComponent: Popup, refresh, updateInvestment, allCompanies }) => {
+    const [open, setOpen] = useState(false);
+
+    // useEffect(() => {
+    //   setOpen(true)
+    // },[])
+
+    return (
+      <Plugin>
+        <Template name="popupEditing">
+          <TemplateConnector>
+            {(
+              {
+                addedRows,
+                rows,
+                getRowId,
+                editingRowIds,
+                createRowChange,
+                rowChanges,
+              },
+              {
+                changeRow,
+                commitChangedRows,
+                stopEditRows,
+                cancelAddedRows,
+                commitAddedRows,
+                changeAddedRow,
+              }
+            ) => {
+              const isAddMode = addedRows.length > 0;
+              const isEditMode = editingRowIds.length > 0;
+
+              const editRowId = editingRowIds[0] || 0;
+
+              const open = isEditMode || isAddMode;
+              const targetRow = rows.filter(
+                (row) => getRowId(row) === editRowId
+              )[0];
+              const changedRow = isAddMode
+                ? addedRows[0]
+                : { ...targetRow, ...rowChanges[editRowId] };
+
+              const processValueChange = (fieldName, newValue) => {
+                const changeArgs = {
+                  rowId: editRowId,
+                  change: createRowChange(changedRow, newValue, fieldName),
+                };
+
+                if (isAddMode) {
+                  changeAddedRow(changeArgs);
+                } else {
+                  changeRow(changeArgs);
+                }
+              };
+              const applyChanges = () => {
+                if (isEditMode) {
+                  commitChangedRows({ rowIds: editingRowIds });
+                } else {
+                  commitAddedRows({ rowIds: [0] });
+                }
+                stopEditRows({ rowIds: editingRowIds });
+              };
+              const cancelChanges = () => {
+                if (isAddMode) {
+                  cancelAddedRows({ rowIds: [0] });
+                }
+                stopEditRows({ rowIds: editingRowIds });
+              };
+
+              return (
+                <Popup
+                  open={open}
+                  row={changedRow}
+                  onChange={processValueChange}
+                  onApplyChanges={applyChanges}
+                  onCancelChanges={cancelChanges}
+                  allCompanies={allCompanies}
+                />
+              );
+            }}
+          </TemplateConnector>
+        </Template>
+        <Template name="root">
+          <TemplatePlaceholder />
+          <TemplatePlaceholder name="popupEditing" />
+        </Template>
+      </Plugin>
+    );
+  }
+);
 
 const State = {
   addButton: "+ Add Investments",
@@ -215,7 +273,7 @@ const CustomToolbarMarkup = () => (
   </Plugin>
 );
 
-const GetInvestorDetail = gql`
+const GET_INVESTOR_DETAIL = gql`
   query GetInvestorDetail($id: Int) {
     investor(where: { id: { _eq: $id } }) {
       id
@@ -266,8 +324,26 @@ const InvestorSummary = ({ investor, total }) => {
   );
 };
 
+const DELETE_INVESTMENT = gql`
+  mutation DeleteInvestment($id: Int) {
+    delete_investment(where: { id: { _eq: $id } }) {
+      affected_rows
+    }
+  }
+`;
+
+const GET_ALL_COMPANIES = gql`
+  query GetAllCompanies {
+    company(distinct_on: name) {
+      id
+      name
+    }
+  }
+`;
+
 export const InvestorDetails = () => {
   const [columns] = useState(State.columns);
+  const { data: allCompanies } = useQuery(GET_ALL_COMPANIES);
 
   const useStyles = makeStyles({
     headerRow: {
@@ -288,41 +364,95 @@ export const InvestorDetails = () => {
 
   const [currencyColumns] = useState([State.columns[1].name]);
 
-  const { loading, error, data } = useQuery(GetInvestorDetail, {
+  const { loading, error, data, refetch } = useQuery(GET_INVESTOR_DETAIL, {
     variables: {
       id: 68,
     },
   });
 
+  const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
+    refetchQueries: [
+      {
+        query: GET_INVESTOR_DETAIL,
+        variables: {
+          id: 68,
+        },
+      },
+    ],
+  });
+
+  const [updateInvestment] = useMutation(UPDATE_INVESTMENT, {
+    refetchQueries: [
+      {
+        query: GET_INVESTOR_DETAIL,
+        variables: {
+          id: 68,
+        },
+      },
+    ],
+  });
+
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const commitChanges = ({ added, changed }) => {
+  const commitChanges = ({ added, changed, deleted }) => {
+    console.log(added, changed, deleted, rows);
     let changedRows;
     if (added) {
-      const startingAddedId =
-        rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
-      changedRows = [
-        ...rows,
-        ...added.map((row, index) => ({
-          id: startingAddedId + index,
-          ...row,
-        })),
-      ];
+      // const startingAddedId =
+      //   rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
+      // changedRows = [
+      //   ...rows,
+      //   ...added.map((row, index) => ({
+      //     id: startingAddedId + index,
+      //     ...row,
+      //   })),
+      // ];
+
+      // updateInvestment(added[0]);
+
+      console.log(added);
     }
     if (changed) {
-      changedRows = rows.map((row) =>
-        changed[row.id] ? { ...row, ...changed[row.id] } : row
-      );
+      // changedRows = rows.map((row) => {
+      //   console.log(changed, changed[row.id]);
+      //   return changed[row.id] ? { ...row, ...changed[row.id] } : row;
+      // });
+      const exitingData = rows.find((row) => changed[row.id]);
+      const editRow = { ...exitingData, ...changed[exitingData.id] };
+
+      //  console.log('edit', editRow)
+
+      updateInvestment({
+        variables: {
+          id: editRow.id,
+          amount: editRow.amount,
+          company_id: editRow.companyId
+        },
+      });
+
+      // updateInvestment()
     }
-    setRows(changedRows);
+    // if (added || changed) {
+    //   setRows(changedRows);
+
+    // }
+
+    if (deleted) deleteInvestmentMutation({ variables: { id: deleted[0] } });
+
+    console.log(added, changed, rows);
   };
 
+  const getRowId = (row) => row.id;
+
   const loadData = () => {
+    console.log("nice");
     if (rows && !data) return;
 
     setRows(
       data.investor[0].investments.map((detail) => ({
+        companyId: detail.company.id,
+        id: detail.id,
         name: detail.company.name,
         amount: detail.amount,
       }))
@@ -335,7 +465,7 @@ export const InvestorDetails = () => {
     );
   };
 
-  useEffect(() => loadData(), [loading]);
+  useEffect(() => loadData(), [data]);
 
   const [tableColumnExtensions] = useState([
     { columnName: State.columns[0].name },
@@ -351,7 +481,7 @@ export const InvestorDetails = () => {
         total={total}
       />
 
-      <Grid rows={rows} columns={columns}>
+      <Grid rows={rows} columns={columns} getRowId={getRowId}>
         <DataTypeProvider
           for={employeeColumns}
           formatterComponent={EmployeeFormatter}
@@ -373,7 +503,13 @@ export const InvestorDetails = () => {
           showDeleteCommand
           commandComponent={Command}
         />
-        <PopupEditing popupComponent={Popup} />
+        <PopupEditing
+          popupComponent={Popup}
+          refresh={refetch}
+          updateInvestment={updateInvestment}
+          open={true}
+          allCompanies={allCompanies}
+        />
         <Getter
           name="tableColumns"
           computed={({ tableColumns }) => {
@@ -392,6 +528,7 @@ export const InvestorDetails = () => {
   );
 };
 
+// Action button icons in the grid
 const EditButton = ({ onExecute, disabled }) => (
   <IconButton onClick={onExecute} disabled={disabled} aria-label="delete">
     <EditIcon color="default" fontSize="small" />

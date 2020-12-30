@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
-import { SearchTable } from "./components/SearchTable";
+import { ListInvestors } from "./components/ListInvestors";
 import { ListCompanies } from "./components/ListCompanies";
 import { InvestorDetails } from "./components/InvestorDetails";
-import Investors from "./Investors";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
@@ -53,7 +52,7 @@ function App() {
           <Tab label="Companies" />
         </Tabs>
         <TabPanel value={value} index={0}>
-          {/* <SearchTable /> */}
+          {/* <ListInvestors /> */}
           <InvestorDetails />
         </TabPanel>
         <TabPanel value={value} index={1}>

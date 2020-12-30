@@ -111,7 +111,7 @@ const GET_INVESTORS = gql`
   }
 `;
 
-export const SearchTable = () => {
+export const ListInvestors = () => {
   const [columns] = useState([
     { name: "photo_thumbnail", title: "Name" },
     { name: "investments", title: "Investments" },
