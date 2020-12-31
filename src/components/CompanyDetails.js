@@ -47,8 +47,8 @@ import { EmployeeFormatter } from "./EmployeeFormatter";
 import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 // const INVESTOR_ID = 100;
-import { PopupEditing } from "./PopupEditing";
-import { Popup } from "./Popup";
+import { PopupEditing } from "./helper/PopupEditing";
+import { Popup } from "./helper/Popup";
 
 
 

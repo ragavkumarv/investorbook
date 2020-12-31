@@ -41,8 +41,8 @@ import { ADD_INVESTMENT, GET_INVESTOR_DETAIL, GET_ALL_COMPANIES, UPDATE_INVESTME
 import { EmployeeFormatter } from "./EmployeeFormatter";
 import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
-import { PopupEditing } from "./PopupEditing";
-import { Popup } from "./Popup";
+import { PopupEditing } from "./helper/PopupEditing";
+import { Popup } from "./helper/Popup";
 
 const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   const handleChange = (event) => {
