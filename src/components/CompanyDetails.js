@@ -1,51 +1,41 @@
-import { useQuery, useMutation } from "@apollo/client";
-import {
-  Plugin,
-  Template,
-  TemplateConnector,
-  TemplatePlaceholder,
-  Getter,
-} from "@devexpress/dx-react-core";
-import { DataTypeProvider, SummaryState } from "@devexpress/dx-react-grid";
+import { useMutation, useQuery } from "@apollo/client";
+import { Getter } from "@devexpress/dx-react-core";
+import { DataTypeProvider, EditingState } from "@devexpress/dx-react-grid";
 import {
   Grid,
   Table,
+  TableEditColumn,
   TableHeaderRow,
   Toolbar,
-  TableEditColumn,
 } from "@devexpress/dx-react-grid-material-ui";
 import Button from "@material-ui/core/Button";
-import MuiGrid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useEffect, useState } from "react";
-import { Loading } from "./loader/Loading";
-
-import { EditingState } from "@devexpress/dx-react-grid";
-
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import AddIcon from "@material-ui/icons/Add";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { Command } from "./helper/Command";
+import { EditInvestor } from "./EditInvestor";
+import { EmployeeFormatter } from "./EmployeeFormatter";
 import {
   ADD_INVESTMENT,
-  GET_COMPANY_DETAIL,
-  GET_ALL_INVESTORS,
-  UPDATE_INVESTMENT,
-  UPDATE_COMPANY,
-  DELETE_INVESTOR,
   DELETE_INVESTMENT,
+  DELETE_INVESTOR,
+  GET_ALL_INVESTORS,
+  GET_COMPANY_DETAIL,
+  UPDATE_COMPANY,
+  UPDATE_INVESTMENT,
 } from "./gql";
-import { EmployeeFormatter } from "./EmployeeFormatter";
+import { Command } from "./helper/Command";
 import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
+import { Popup } from "./helper/Popup";
 // const INVESTOR_ID = 100;
 import { PopupEditing } from "./helper/PopupEditing";
-import { Popup } from "./helper/Popup";
-import { EditInvestor } from "./EditInvestor";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import IconButton from "@material-ui/core/IconButton";
+import { Loading } from "./loader/Loading";
+
 export const State = {
   addButton: "+ Add Investors",
   heading: "Investors",
@@ -57,7 +47,7 @@ export const State = {
   ],
 };
 
-const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
+const InvestorSummary = ({ investor, setOpen, removeInvestor }) => {
   return (
     <div
       style={{
@@ -172,7 +162,6 @@ export const CompanyDetails = () => {
   const [currencyColumns] = useState([State.columns[1].name]);
 
   const [rows, setRows] = useState([]);
-  const [total, setTotal] = useState(0);
 
   const [openEditInvestor, setOpenEditInvestor] = useState(false);
 
@@ -268,7 +257,7 @@ export const CompanyDetails = () => {
         style={{
           marginTop: "24px",
         }}
-        onClick={()=> history.goBack()}
+        onClick={() => history.goBack()}
       >
         <ArrowBackIosIcon fontSize="large" />
       </IconButton>
@@ -283,7 +272,6 @@ export const CompanyDetails = () => {
         />
         <InvestorSummary
           investor={data ? data.company[0] : { name: "" }}
-          total={total}
           setOpen={setOpenEditInvestor}
           removeInvestor={removeInvestor}
         />

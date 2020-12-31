@@ -42,7 +42,7 @@ export const Popup = ({
               onChange={(event) => onChange(id, event.target.value)}
             >
               {(allCompanies ? allCompanies[path] : []).map((investor) => (
-                <MenuItem value={investor.id}>{investor.name}</MenuItem>
+                <MenuItem key={investor.id} value={investor.id}>{investor.name}</MenuItem>
               ))}
             </Select>
           </FormControl>

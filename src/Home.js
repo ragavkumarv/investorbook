@@ -1,17 +1,10 @@
+import { makeStyles } from "@material-ui/core/styles";
+import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
 import React, { useState } from "react";
 import "./App.css";
-import { ListInvestors } from "./components/ListInvestors";
 import { ListCompanies } from "./components/ListCompanies";
-import { InvestorDetails } from "./components/InvestorDetails";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import {
-  Switch,
-  Route,
-  useHistory
-} from "react-router-dom";
+import { ListInvestors } from "./components/ListInvestors";
 
 const useStyles = makeStyles({
   root: {
@@ -44,24 +37,24 @@ function Home() {
   };
 
   return (
-      <div className={classes.root}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Investors" />
-          <Tab label="Companies" />
-        </Tabs>
-        <TabPanel value={value} index={0}>
-          <ListInvestors />
-          {/* <InvestorDetails /> */}
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <ListCompanies />
-        </TabPanel>
-      </div>
+    <div className={classes.root}>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        indicatorColor="primary"
+        textColor="primary"
+      >
+        <Tab label="Investors" />
+        <Tab label="Companies" />
+      </Tabs>
+      <TabPanel value={value} index={0}>
+        <ListInvestors />
+        {/* <InvestorDetails /> */}
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <ListCompanies />
+      </TabPanel>
+    </div>
   );
 }
 
