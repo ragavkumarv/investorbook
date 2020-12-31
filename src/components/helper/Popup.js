@@ -23,7 +23,7 @@ export const Popup = ({
   detail
 }) => {
   const path = detail.selectMenu.toLowerCase();
-  const id = path + 'id';
+  const id = path + 'Id';
   return (
     <Dialog
       open={open}

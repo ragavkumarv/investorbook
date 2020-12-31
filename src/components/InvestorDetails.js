@@ -221,7 +221,7 @@ export const InvestorDetails = () => {
         variables: {
           amount: +newRow.amount,
           investor_id: INVESTOR_ID,
-          company_id: newRow.companyId,
+          company_id: +newRow.companyId,
         },
       });
     }
