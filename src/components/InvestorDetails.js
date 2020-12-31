@@ -18,7 +18,6 @@ import EditIcon from "@material-ui/icons/Edit";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { EditInvestor } from "./EditInvestor";
-import { EmployeeFormatter } from "./EmployeeFormatter";
 import {
   ADD_INVESTMENT,
   DELETE_INVESTMENT,
@@ -28,11 +27,14 @@ import {
   UPDATE_INVESTMENT,
   UPDATE_INVESTOR,
 } from "./gql";
-import { Command } from "./helper/Command";
-import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
-import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
-import { Popup } from "./helper/Popup";
-import { PopupEditing } from "./helper/PopupEditing";
+import {
+  Command,
+  CurrencyTypeProvider,
+  DetailToolbarMarkup,
+  EmployeeFormatter,
+  Popup,
+  PopupEditing,
+} from "./helper";
 import { Loading } from "./loader/Loading";
 
 export const State = {
@@ -321,7 +323,7 @@ export const InvestorDetails = () => {
           <CurrencyTypeProvider for={currencyColumns} />
 
           <Toolbar />
-          <CustomToolbarMarkup state={State} />
+          <DetailToolbarMarkup state={State} />
 
           <TableEditColumn
             showAddCommand

@@ -21,18 +21,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import { default as React, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useDebounce } from "use-debounce";
-import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
-import { EmployeeFormatter } from "./EmployeeFormatter";
 import { ADD_INVESTOR, GET_INVESTORS } from "./gql";
-import { GroupTypeProvider } from "./helper/GroupTypeProvider";
-import { HighlightRowOnHover } from "./HighlightRowOnHover";
+import {
+  EmployeeFormatter,
+  GroupTypeProvider,
+  HighlightRowOnHover,
+  ListToolbarMarkup,
+} from "./helper";
 import { Loading } from "./loader/Loading";
 import { NewInvestor } from "./NewInvestor";
 
 const State = {
   addButton: "Add Investor",
   heading: "Investors",
-  routePath: 'investor'
+  routePath: "investor",
 };
 
 export const ListInvestors = () => {
@@ -176,7 +178,7 @@ export const ListInvestors = () => {
 
         <Toolbar />
         <SearchPanel />
-        <CustomToolbarMarkup
+        <ListToolbarMarkup
           setOpenEditInvestor={setOpenEditInvestor}
           State={State}
         />
@@ -190,7 +192,6 @@ export const ListInvestors = () => {
         />
         <CustomPaging totalCount={totalCount} />
         <PagingPanel pageSizes={pageSizes} />
-
       </Grid>
       {loading && <Loading />}
     </Paper>

@@ -6,7 +6,7 @@ import {
 } from "@devexpress/dx-react-core";
 import React from "react";
 
-export const CustomToolbarMarkup = ({state}) => (
+export const DetailToolbarMarkup = ({state}) => (
   <Plugin name="customToolbarMarkup">
     <Template name="toolbarContent">
       <div

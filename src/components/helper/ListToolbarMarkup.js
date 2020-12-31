@@ -6,7 +6,7 @@ import {
 } from "@devexpress/dx-react-core";
 import Button from "@material-ui/core/Button";
 
-export const CustomToolbarMarkup = ({ setOpenEditInvestor, State }) => (
+export const ListToolbarMarkup = ({ setOpenEditInvestor, State }) => (
   <Plugin name="customToolbarMarkup">
     <Template name="toolbarContent">
       <div

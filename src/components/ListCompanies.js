@@ -21,13 +21,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useDebounce } from "use-debounce";
-import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
-import { EmployeeFormatter } from "./EmployeeFormatter";
+import { ListToolbarMarkup } from "./helper";
+import { EmployeeFormatter } from "./helper";
 import { ADD_COMPANY, GET_COMPANIES } from "./gql";
-import { GroupTypeProvider } from "./helper/GroupTypeProvider";
+import { GroupTypeProvider } from "./helper";
 import { Loading } from "./loader/Loading";
 import { NewInvestor } from "./NewInvestor";
-import { HighlightRowOnHover } from "./HighlightRowOnHover";
+import { HighlightRowOnHover } from "./helper";
 
 const State = {
   addButton: "Add Company",
@@ -174,7 +174,7 @@ export const ListCompanies = () => {
 
         <Toolbar />
         <SearchPanel />
-        <CustomToolbarMarkup
+        <ListToolbarMarkup
           setOpenEditInvestor={setOpenEditInvestor}
           State={State}
         />
