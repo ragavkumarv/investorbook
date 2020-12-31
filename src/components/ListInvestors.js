@@ -35,6 +35,7 @@ import { useHistory } from "react-router-dom";
 import { GET_INVESTORS, ADD_INVESTOR } from "./gql";
 import { Loading } from "./loader/Loading";
 import { EmployeeFormatter } from "./EmployeeFormatter";
+import { useDebounce } from 'use-debounce';
 
 const CurrencyFormatter = ({ value }) => (
   <p style={{ fontSize: "12px", color: "#6C6C6C", fontWeight: 500 }}>{value}</p>
@@ -199,6 +200,7 @@ export const ListInvestors = () => {
   const [pageSizes] = useState([5, 10, 15]);
 
   const [searchValue, setSearchValue] = useState("%%");
+  const [debounceSearch] = useDebounce(searchValue, 1000);
 
   const [currencyColumns] = useState(["investments"]);
 
@@ -212,7 +214,7 @@ export const ListInvestors = () => {
 
   const { loading, error, data } = useQuery(GET_INVESTORS, {
     variables: {
-      search: searchValue,
+      search: debounceSearch,
       orderBy: { [sorting[0].columnName]: sorting[0].direction },
       limitBy: pageSize,
       offsetBy: pageSize * currentPage,

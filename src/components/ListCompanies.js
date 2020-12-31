@@ -42,6 +42,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import TextField from "@material-ui/core/TextField";
 import { GET_COMPANIES, ADD_COMPANY } from "./gql";
 import { EmployeeFormatter } from "./EmployeeFormatter";
+import { useDebounce } from 'use-debounce';
 
 const State = {
   addButton: "Add Company",
@@ -193,7 +194,8 @@ export const ListCompanies = () => {
 
   const [pageSizes] = useState([5, 10, 15]);
 
-  const [searchValue, setSearchValue] = useState("%");
+  const [searchValue, setSearchValue] = useState("%%");
+  const [debounceSearch] = useDebounce(searchValue, 1000);
 
   const [currencyColumns] = useState([State.columns[1].name]);
 
@@ -207,7 +209,7 @@ export const ListCompanies = () => {
 
   const { loading, error, data } = useQuery(GET_COMPANIES, {
     variables: {
-      search: searchValue,
+      search: debounceSearch,
       orderBy: { [sorting[0].columnName]: sorting[0].direction },
       limitBy: pageSize,
       offsetBy: pageSize * currentPage,
