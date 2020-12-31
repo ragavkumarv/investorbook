@@ -24,7 +24,7 @@ import { useDebounce } from "use-debounce";
 import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
 import { EmployeeFormatter } from "./EmployeeFormatter";
 import { ADD_INVESTOR, GET_INVESTORS } from "./gql";
-import { GroupTypeProvider } from "./groupListFormatter";
+import { GroupTypeProvider } from "./helper/GroupTypeProvider";
 import { HighlightRowOnHover } from "./HighlightRowOnHover";
 import { Loading } from "./loader/Loading";
 import { NewInvestor } from "./NewInvestor";

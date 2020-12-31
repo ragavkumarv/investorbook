@@ -11,9 +11,6 @@ export const HighlightRowOnHover = ({
   ...restProps
 }) => {
   const useStyles = makeStyles({
-    selected: {
-      backgroundColor: "rgba(0, 0, 0, 0.08)",
-    },
     customRow: {
       "&:hover": {
         backgroundColor: "#F5F5F5",
@@ -28,7 +25,7 @@ export const HighlightRowOnHover = ({
   return (
     <TableSelection.Row
       {...restProps}
-      className={{ [classes.selected]: highlighted, [classes.customRow]: true }}
+      className={classes.customRow}
       onClick={() => {
         onToggle();
         history.push(`/${tableRow.row.__typename}/${tableRow.row.id}`);
