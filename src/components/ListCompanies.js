@@ -73,7 +73,7 @@ export const ListCompanies = () => {
     { columnName: "id", direction: "asc" },
   ]);
 
-  const { loading, error, data } = useQuery(GET_COMPANIES, {
+  const { loading, data } = useQuery(GET_COMPANIES, {
     variables: {
       search: debounceSearch,
       orderBy: { [sorting[0].columnName]: sorting[0].direction },

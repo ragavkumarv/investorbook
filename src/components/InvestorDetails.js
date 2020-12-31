@@ -176,7 +176,7 @@ export const InvestorDetails = () => {
 
   const [currencyColumns] = useState([State.columns[1].name]);
 
-  const { loading, error, data, refetch } = useQuery(GET_INVESTOR_DETAIL, {
+  const { loading, data, refetch } = useQuery(GET_INVESTOR_DETAIL, {
     variables: {
       id: INVESTOR_ID,
     },

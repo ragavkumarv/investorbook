@@ -103,7 +103,7 @@ export const CompanyDetails = () => {
 
   const { data: allInvestors } = useQuery(GET_ALL_INVESTORS);
 
-  const { loading, error, data, refetch } = useQuery(GET_COMPANY_DETAIL, {
+  const { loading, data, refetch } = useQuery(GET_COMPANY_DETAIL, {
     variables: {
       id: COMPANY_ID,
     },
