@@ -11,7 +11,7 @@ function App() {
 
   return (
     <div style={{ position: "relative" }} className="App">
-      <p className="logo" onClick={(e) => history.push("/")}></p>
+      <p className="logo" style={{ cursor: "pointer" }} onClick={(e) => history.push("/")}></p>
       <Switch>
         <Route path="/investor/:id">
           <InvestorDetails />
