@@ -40,6 +40,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from 'react-router-dom';
+import { Command } from "./Command";
 
 // const INVESTOR_ID = 100;
 
@@ -683,34 +684,4 @@ export const InvestorDetails = () => {
       {loading && <Loading />}
     </Paper>
   );
-};
-
-// Action button icons in the grid
-const EditButton = ({ onExecute, disabled }) => (
-  <IconButton onClick={onExecute} disabled={disabled} aria-label="delete">
-    <EditIcon color="default" fontSize="small" />
-  </IconButton>
-);
-
-const DeleteButton = ({ onExecute, disabled }) => (
-  <IconButton onClick={onExecute} disabled={disabled} aria-label="delete">
-    <DeleteIcon color="default" fontSize="small" />
-  </IconButton>
-);
-
-const AddButton = ({ onExecute, disabled }) => (
-  <Button onClick={onExecute} disabled={disabled} color="primary">
-    {State.addButton}
-  </Button>
-);
-
-const commandComponents = {
-  add: AddButton,
-  edit: EditButton,
-  delete: DeleteButton,
-};
-
-const Command = ({ id, onExecute, disabled }) => {
-  const ButtonComponent = commandComponents[id];
-  return <ButtonComponent onExecute={onExecute} disabled={disabled} />;
 };
