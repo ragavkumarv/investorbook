@@ -25,10 +25,11 @@ export const ADD_INVESTOR = gql`
 
 
 export const GET_INVESTORS = gql`
-  query GetInvestors($search: String, $offsetBy: Int, $limitBy: Int) {
+  query GetInvestors($search: String, $offsetBy: Int, $limitBy: Int, $orderBy: [investor_order_by!] ) {
     investor(
       limit: $limitBy
-      offset: $offsetBy
+      offset: $offsetBy,
+      order_by: $orderBy,
       where: { name: { _ilike: $search } }
     ) {
       investments {

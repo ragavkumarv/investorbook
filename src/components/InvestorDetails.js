@@ -1,56 +1,39 @@
-import { useQuery, useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Getter } from "@devexpress/dx-react-core";
-import { DataTypeProvider, SummaryState } from "@devexpress/dx-react-grid";
+import { DataTypeProvider, EditingState } from "@devexpress/dx-react-grid";
 import {
   Grid,
   Table,
+  TableEditColumn,
   TableHeaderRow,
   Toolbar,
-  TableEditColumn,
 } from "@devexpress/dx-react-grid-material-ui";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import FormGroup from "@material-ui/core/FormGroup";
-import MuiGrid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import React, { useEffect, useState } from "react";
-import { Loading } from "./loader/Loading";
-
-import { EditingState } from "@devexpress/dx-react-grid";
-
-import IconButton from "@material-ui/core/IconButton";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import AddIcon from "@material-ui/icons/Add";
-import FormControl from "@material-ui/core/FormControl";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { Command } from "./helper/Command";
+import { EditInvestor } from "./EditInvestor";
+import { EmployeeFormatter } from "./EmployeeFormatter";
 import {
   ADD_INVESTMENT,
-  GET_INVESTOR_DETAIL,
+  DELETE_INVESTMENT,
+  DELETE_INVESTOR,
   GET_ALL_COMPANIES,
+  GET_INVESTOR_DETAIL,
   UPDATE_INVESTMENT,
   UPDATE_INVESTOR,
-  DELETE_INVESTOR,
-  DELETE_INVESTMENT,
 } from "./gql";
-import { EmployeeFormatter } from "./EmployeeFormatter";
+import { Command } from "./helper/Command";
 import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
-import { PopupEditing } from "./helper/PopupEditing";
 import { Popup } from "./helper/Popup";
-import { EditInvestor } from "./EditInvestor";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import { PopupEditing } from "./helper/PopupEditing";
+import { Loading } from "./loader/Loading";
 
 export const State = {
   addButton: "+ Add Investments",
@@ -63,7 +46,13 @@ export const State = {
 
 const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
   return (
-    <div style={{ display: "grid", padding: "20px", gridTemplateColumns: "80px 6fr 6fr" }}>
+    <div
+      style={{
+        display: "grid",
+        padding: "20px",
+        gridTemplateColumns: "80px 6fr 6fr",
+      }}
+    >
       <div style={{ display: "flex", alignItems: "center" }}>
         <img
           src={
@@ -96,7 +85,11 @@ const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
           alignItems: "center",
         }}
       >
-        <Button style={{ marginRight: "10px" }} onClick={() => setOpen(true)} startIcon={<EditIcon />}>
+        <Button
+          style={{ marginRight: "10px" }}
+          onClick={() => setOpen(true)}
+          startIcon={<EditIcon />}
+        >
           EDIT NAME
         </Button>
         <Button onClick={() => removeInvestor()} startIcon={<DeleteIcon />}>
@@ -202,7 +195,6 @@ export const InvestorDetails = () => {
   };
 
   const saveInvestor = () => {
-    // console.log(state);
     updateInvestor({
       variables: {
         id: INVESTOR_ID,
@@ -214,7 +206,6 @@ export const InvestorDetails = () => {
   };
 
   const commitChanges = ({ added, changed, deleted }) => {
-    console.log(added, changed, deleted, rows);
     if (added) {
       const [newRow] = added;
       addInvestment({

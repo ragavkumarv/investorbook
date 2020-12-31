@@ -186,7 +186,6 @@ export const CompanyDetails = () => {
   };
 
   const saveInvestor = () => {
-    // console.log(state);
     updateCompany({
       variables: {
         id: COMPANY_ID,
@@ -196,7 +195,6 @@ export const CompanyDetails = () => {
   };
 
   const commitChanges = ({ added, changed, deleted }) => {
-    console.log(added, changed, deleted, rows);
     if (added) {
       const [newRow] = added;
       addInvestment({
@@ -225,8 +223,6 @@ export const CompanyDetails = () => {
 
   const loadData = () => {
     if (rows && !data) return;
-
-    console.log(data);
     setRows(
       data.company[0].investments.map((detail) => ({
         investorId: detail.investor.id,

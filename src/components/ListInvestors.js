@@ -10,6 +10,7 @@ import {
   PagingState,
   SearchState,
   SelectionState,
+  SortingState,
 } from "@devexpress/dx-react-grid";
 import {
   Grid,
@@ -33,6 +34,7 @@ import { default as React, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { GET_INVESTORS, ADD_INVESTOR } from "./gql";
 import { Loading } from "./loader/Loading";
+import { EmployeeFormatter } from "./EmployeeFormatter";
 
 const CurrencyFormatter = ({ value }) => (
   <p style={{ fontSize: "12px", color: "#6C6C6C", fontWeight: 500 }}>{value}</p>
@@ -56,7 +58,7 @@ const TableRow = ({
     customRow: {
       "&:hover": {
         backgroundColor: "#F5F5F5",
-        cursor: 'pointer'
+        cursor: "pointer",
       },
     },
   });
@@ -70,37 +72,11 @@ const TableRow = ({
       className={{ [classes.selected]: highlighted, [classes.customRow]: true }}
       onClick={() => {
         onToggle();
-        console.log(tableRow);
         history.push(`/investor/${tableRow.row.id}`);
-        // alert(JSON.stringify(tableRow));
       }}
     />
   );
 };
-
-const EmployeeFormatter = ({ row }) => (
-  <div
-    style={{
-      display: "flex",
-      gap: "14px",
-      alignItems: "center",
-    }}
-  >
-    <div>
-      <img
-        src={row.photo_thumbnail}
-        style={{
-          height: "38px",
-          width: "38px",
-          borderRadius: "50%",
-          margin: "0 auto",
-        }}
-        alt="Avatar"
-      />
-    </div>
-    {row.name}
-  </div>
-);
 
 const CustomToolbarMarkup = ({ setOpenEditInvestor }) => (
   <Plugin name="customToolbarMarkup">
@@ -199,7 +175,7 @@ const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
 
 export const ListInvestors = () => {
   const [columns] = useState([
-    { name: "photo_thumbnail", title: "Name" },
+    { name: "name", title: "Name" },
     { name: "investments", title: "Investments" },
   ]);
 
@@ -232,10 +208,14 @@ export const ListInvestors = () => {
   const [pageSize, setPageSize] = useState(pageSizes[1]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [sorting, setSorting] = useState([
+    { columnName: "id", direction: "asc" },
+  ]);
 
   const { loading, error, data } = useQuery(GET_INVESTORS, {
     variables: {
       search: searchValue,
+      orderBy : {[sorting[0].columnName]: sorting[0].direction},
       limitBy: pageSize,
       offsetBy: pageSize * currentPage,
     },
@@ -261,14 +241,13 @@ export const ListInvestors = () => {
             .join(", ") || "Yet to Invest",
       }))
     );
-    console.log(data.investor_aggregate.aggregate.count);
     setTotalCount(data.investor_aggregate.aggregate.count);
   };
 
   const [AddInvestor] = useMutation(ADD_INVESTOR);
 
   const saveInvestor = async () => {
-    // console.log(state);
+
     const {
       data: { insert_investor },
     } = await AddInvestor({
@@ -282,18 +261,18 @@ export const ListInvestors = () => {
     history.push(`/investor/${insert_investor.returning[0].id}`);
   };
 
-  useEffect(() => loadData(), [loading, currentPage]);
+  useEffect(() => loadData(), [loading, currentPage, sorting]);
 
   const typeSearch = (value) => {
     setSearchValue("%" + value + "%");
   };
 
   const [tableColumnExtensions] = useState([
-    { columnName: "photo_thumbnail", width: '25%' },
-    { columnName: "investments", wordWrapEnabled: true },
+    { columnName: "name", width: 200 },
+    { columnName: "investments", wordWrapEnabled: true }
   ]);
 
-  const [employeeColumns] = useState(["photo_thumbnail"]);
+  const [employeeColumns] = useState(["name"]);
 
   return (
     <Paper style={{ position: "relative" }}>
@@ -309,6 +288,7 @@ export const ListInvestors = () => {
           for={employeeColumns}
           formatterComponent={EmployeeFormatter}
         />
+        <SortingState sorting={sorting} onSortingChange={setSorting} />
         <PagingState
           currentPage={currentPage}
           onCurrentPageChange={setCurrentPage}
@@ -317,7 +297,7 @@ export const ListInvestors = () => {
         />
         <Table columnExtensions={tableColumnExtensions} />
 
-        <TableHeaderRow cellComponent={cellComponent} />
+        <TableHeaderRow showSortingControls cellComponent={cellComponent} />
         <SelectionState />
         <TableSelection
           selectByRowClick

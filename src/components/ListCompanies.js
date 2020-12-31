@@ -40,6 +40,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import FormGroup from "@material-ui/core/FormGroup";
 import TextField from "@material-ui/core/TextField";
 import { GET_COMPANIES, ADD_COMPANY } from "./gql";
+import { EmployeeFormatter } from "./EmployeeFormatter";
 
 const State = {
   addButton: "Add Company",
@@ -86,37 +87,11 @@ const TableRow = ({
       className={{ [classes.selected]: highlighted, [classes.customRow]: true }}
       onClick={() => {
         onToggle();
-        console.log(tableRow);
         history.push(`/company/${tableRow.row.id}`)
-        // alert(JSON.stringify(tableRow));
       }}
     />
   );
 };
-
-const EmployeeFormatter = ({ row }) => (
-  <div
-    style={{
-      display: "flex",
-      gap: "14px",
-      alignItems: "center",
-    }}
-  >
-    {/* <div>
-      <img
-        src={row.name}
-        style={{
-          height: "38px",
-          width: "38px",
-          borderRadius: "50%",
-          margin: "0 auto",
-        }}
-        alt="Avatar"
-      />
-    </div> */}
-    {row.name}
-  </div>
-);
 
 const CustomToolbarMarkup = ({setOpenEditInvestor}) => (
   <Plugin name="customToolbarMarkup">
@@ -257,12 +232,9 @@ export const ListCompanies = () => {
   const [openEditInvestor, setOpenEditInvestor] = useState(false);
   const [state, setState] = useState({
     name: "",
-    // photoThumbnail: "",
-    // photoLarge: "",
   });
 
   const saveInvestor = async () => {
-    // console.log(state);
     const {
       data: { insert_company },
     } = await AddInvestor({
