@@ -279,6 +279,18 @@ const EmployeeFormatter = ({ row }) => (
       alignItems: "center",
     }}
   >
+    <div>
+      <img
+        src={row.photo_thumbnail}
+        style={{
+          height: "38px",
+          width: "38px",
+          borderRadius: "50%",
+          margin: "0 auto",
+        }}
+        alt="Avatar"
+      />
+    </div>
     {row.name}
   </div>
 );
@@ -320,11 +332,14 @@ const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
           display: "flex",
           placeContent: "center flex-end",
           alignItems: "center",
-         
         }}
       >
-        <div >
-          <Button style={{marginRight:'10px'}} onClick={() => setOpen(true)} startIcon={<EditIcon />}>
+        <div>
+          <Button
+            style={{ marginRight: "10px" }}
+            onClick={() => setOpen(true)}
+            startIcon={<EditIcon />}
+          >
             {State.edit}
           </Button>
           <Button onClick={() => removeInvestor()} startIcon={<DeleteIcon />}>
@@ -367,6 +382,7 @@ const GET_COMPANY_DETAIL = gql`
         investor {
           id
           name
+          photo_thumbnail
         }
       }
     }
@@ -400,16 +416,8 @@ const UPDATE_INVESTMENT = gql`
 `;
 
 const UPDATE_COMPANY = gql`
-  mutation UpdateCompany(
-    $id: Int
-    $name: String
-  ) {
-    update_company(
-      where: { id: { _eq: $id } }
-      _set: {
-        name: $name
-      }
-    ) {
+  mutation UpdateCompany($id: Int, $name: String) {
+    update_company(where: { id: { _eq: $id } }, _set: { name: $name }) {
       affected_rows
     }
   }
@@ -571,10 +579,11 @@ export const CompanyDetails = () => {
         id: detail.id,
         name: detail.investor.name,
         amount: detail.amount,
+        photo_thumbnail: detail.investor.photo_thumbnail
       }))
     );
 
-    const { id, name} = data.company[0];
+    const { id, name } = data.company[0];
 
     setState({
       id,
@@ -589,7 +598,7 @@ export const CompanyDetails = () => {
     { columnName: State.columns[1].name },
   ]);
 
-  const [employeeColumns] = useState([State.columns[1].name]);
+  const [employeeColumns] = useState([State.columns[0].name]);
 
   return (
     <Paper style={{ position: "relative" }}>

@@ -41,11 +41,32 @@ const CurrencyTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
 );
 
-const TableRow = ({ tableRow, onToggle, ...restProps }) => {
+const TableRow = ({
+  className,
+  tableRow,
+  onToggle,
+  highlighted,
+  ...restProps
+}) => {
+  const useStyles = makeStyles({
+    selected: {
+      backgroundColor: "rgba(0, 0, 0, 0.08)",
+    },
+    customRow: {
+      "&:hover": {
+        backgroundColor: "#F5F5F5",
+        cursor: 'pointer'
+      },
+    },
+  });
+
+  const classes = useStyles();
+
   const history = useHistory();
   return (
     <TableSelection.Row
       {...restProps}
+      className={{ [classes.selected]: highlighted, [classes.customRow]: true }}
       onClick={() => {
         onToggle();
         console.log(tableRow);
@@ -301,7 +322,7 @@ export const ListInvestors = () => {
         photo_thumbnail: state.photoThumbnail,
       },
     });
-    
+
     history.push(`/investor/${insert_investor.returning[0].id}`);
   };
 
