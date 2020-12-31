@@ -39,7 +39,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormGroup from "@material-ui/core/FormGroup";
 import TextField from "@material-ui/core/TextField";
-import { GET_INVESTORS, ADD_INVESTOR } from "./GET_INVESTORS";
+import { GET_COMPANIES, ADD_COMPANY } from "./gql";
 
 const State = {
   addButton: "Add Company",
@@ -226,7 +226,7 @@ export const ListCompanies = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
-  const { loading, error, data } = useQuery(GET_INVESTORS, {
+  const { loading, error, data } = useQuery(GET_COMPANIES, {
     variables: {
       search: searchValue,
       limitBy: pageSize,
@@ -251,7 +251,7 @@ export const ListCompanies = () => {
     setTotalCount(data.company_aggregate.aggregate.count);
   };
 
-  const [AddInvestor] = useMutation(ADD_INVESTOR);
+  const [AddInvestor] = useMutation(ADD_COMPANY);
   const history = useHistory();
 
   const [openEditInvestor, setOpenEditInvestor] = useState(false);

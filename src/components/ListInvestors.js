@@ -31,7 +31,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { default as React, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { GET_INVESTORS, ADD_INVESTOR } from "./ADD_INVESTOR";
+import { GET_INVESTORS, ADD_INVESTOR } from "./gql";
 import { Loading } from "./loader/Loading";
 
 const CurrencyFormatter = ({ value }) => (

@@ -40,7 +40,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from "react-router-dom";
 import { Command } from "./Command";
-import { ADD_INVESTMENT, GET_COMPANY_DETAIL, GET_ALL_INVESTORS, UPDATE_INVESTMENT, UPDATE_COMPANY, DELETE_INVESTOR, DELETE_INVESTMENT } from "./ADD_INVESTMENT";
+import { ADD_INVESTMENT, GET_COMPANY_DETAIL, GET_ALL_INVESTORS, UPDATE_INVESTMENT, UPDATE_COMPANY, DELETE_INVESTOR, DELETE_INVESTMENT } from "./gql";
 
 // const INVESTOR_ID = 100;
 
