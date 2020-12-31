@@ -32,7 +32,13 @@ import { useHistory } from 'react-router-dom';
 import Button from "@material-ui/core/Button";
 
 import { Loading } from "./loader/Loading";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormGroup from "@material-ui/core/FormGroup";
+import TextField from "@material-ui/core/TextField";
 
 const State = {
   addButton: "Add Company",
@@ -90,7 +96,7 @@ const EmployeeFormatter = ({ row }) => (
   </div>
 );
 
-const CustomToolbarMarkup = () => (
+const CustomToolbarMarkup = ({setOpenEditInvestor}) => (
   <Plugin name="customToolbarMarkup">
     <Template name="toolbarContent">
       <div
@@ -103,7 +109,7 @@ const CustomToolbarMarkup = () => (
         <p style={{ fontWeight: 500, fontSize: "28px", lineHeight: "26px" }}>
           {State.heading}
         </p>
-        <Button variant="outlined" color="primary">
+        <Button onClick={() => setOpenEditInvestor(true)} variant="outlined" color="primary">
           {State.addButton}
         </Button>
       </div>
@@ -132,6 +138,76 @@ const GET_INVESTORS = gql`
     company_aggregate(where: { name: { _ilike: $search } }) {
       aggregate {
         count
+      }
+    }
+  }
+`;
+
+const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
+  const type = "Add";
+  const groupName = 'Investor';
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.value });
+  };
+
+  const { name, photoThumbnail, photoLarge } = state;
+
+  return (
+    <Dialog
+      open={open}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">{type} {groupName}</DialogTitle>
+      <DialogContent>
+        <p>Please enter the details of the {groupName.toLowerCase()}.</p>
+        <FormGroup style={{ gap: "20px" }}>
+          <TextField
+            style={{ width: "500px" }}
+            name="name"
+            value={name}
+            onChange={handleChange}
+            label="Name"
+          />
+        </FormGroup>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => {
+            setOpen(false);
+          }}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setOpen(false);
+            saveInvestor();
+          }}
+          color="primary"
+          disableElevation
+        >
+          {type} {groupName}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const ADD_INVESTOR = gql`
+  mutation AddInvestor(
+    $name: String
+  ) {
+    insert_company(
+      objects: {
+        name: $name
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+        name
       }
     }
   }
@@ -193,6 +269,31 @@ export const ListCompanies = () => {
     setTotalCount(data.company_aggregate.aggregate.count);
   };
 
+  const [AddInvestor] = useMutation(ADD_INVESTOR);
+  const history = useHistory();
+
+  const [openEditInvestor, setOpenEditInvestor] = useState(false);
+  const [state, setState] = useState({
+    name: "",
+    // photoThumbnail: "",
+    // photoLarge: "",
+  });
+
+  const saveInvestor = async () => {
+    // console.log(state);
+    const {
+      data: { insert_company },
+    } = await AddInvestor({
+      variables: {
+        name: state.name,
+        photo_large: state.photoLarge,
+        photo_thumbnail: state.photoThumbnail,
+      },
+    });
+    
+    history.push(`/company/${insert_company.returning[0].id}`);
+  };
+
   useEffect(() => loadData(), [loading, currentPage]);
 
   const typeSearch = (value) => {
@@ -208,6 +309,13 @@ export const ListCompanies = () => {
 
   return (
     <Paper style={{ position: "relative" }}>
+      <NewInvestor
+        open={openEditInvestor}
+        setOpen={setOpenEditInvestor}
+        state={state}
+        setState={setState}
+        saveInvestor={saveInvestor}
+      />
       <Grid rows={rows} columns={columns}>
         <DataTypeProvider
           for={employeeColumns}
@@ -236,7 +344,7 @@ export const ListCompanies = () => {
 
         <Toolbar />
         <SearchPanel />
-        <CustomToolbarMarkup />
+        <CustomToolbarMarkup  setOpenEditInvestor={setOpenEditInvestor} />
 
         {/* Paging */}
         <CustomPaging totalCount={totalCount} />
