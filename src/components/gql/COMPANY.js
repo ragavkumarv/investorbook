@@ -38,10 +38,11 @@ export const GET_COMPANY_DETAIL = gql`
 `;
 
 export const GET_COMPANIES = gql`
-  query GetInvestors($search: String, $offsetBy: Int, $limitBy: Int) {
+  query GetCompanies($search: String, $offsetBy: Int, $limitBy: Int, $orderBy: [company_order_by!] ) {
     company(
-      limit: $limitBy
-      offset: $offsetBy
+      limit: $limitBy,
+      offset: $offsetBy,
+      order_by: $orderBy,
       where: { name: { _ilike: $search } }
     ) {
       investments {

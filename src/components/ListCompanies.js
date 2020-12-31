@@ -8,6 +8,7 @@ import {
   IntegratedPaging,
   CustomPaging,
   SelectionState,
+  SortingState,
 } from "@devexpress/dx-react-grid";
 
 import {
@@ -200,10 +201,14 @@ export const ListCompanies = () => {
   const [pageSize, setPageSize] = useState(pageSizes[1]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [sorting, setSorting] = useState([
+    { columnName: "id", direction: "asc" },
+  ]);
 
   const { loading, error, data } = useQuery(GET_COMPANIES, {
     variables: {
       search: searchValue,
+      orderBy: { [sorting[0].columnName]: sorting[0].direction },
       limitBy: pageSize,
       offsetBy: pageSize * currentPage,
     },
@@ -275,6 +280,13 @@ export const ListCompanies = () => {
           for={employeeColumns}
           formatterComponent={EmployeeFormatter}
         />
+        <SortingState
+          sorting={sorting}
+          onSortingChange={setSorting}
+          columnExtensions={[
+            { columnName: "investors", sortingEnabled: false },
+          ]}
+        />
         <PagingState
           currentPage={currentPage}
           onCurrentPageChange={setCurrentPage}
@@ -283,7 +295,7 @@ export const ListCompanies = () => {
         />
         <Table columnExtensions={tableColumnExtensions} />
 
-        <TableHeaderRow cellComponent={cellComponent} />
+        <TableHeaderRow showSortingControls cellComponent={cellComponent} />
         <SelectionState />
         <TableSelection
             selectByRowClick

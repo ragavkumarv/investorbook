@@ -171,8 +171,6 @@ const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   );
 };
 
-
-
 export const ListInvestors = () => {
   const [columns] = useState([
     { name: "name", title: "Name" },
@@ -215,7 +213,7 @@ export const ListInvestors = () => {
   const { loading, error, data } = useQuery(GET_INVESTORS, {
     variables: {
       search: searchValue,
-      orderBy : {[sorting[0].columnName]: sorting[0].direction},
+      orderBy: { [sorting[0].columnName]: sorting[0].direction },
       limitBy: pageSize,
       offsetBy: pageSize * currentPage,
     },
@@ -247,7 +245,6 @@ export const ListInvestors = () => {
   const [AddInvestor] = useMutation(ADD_INVESTOR);
 
   const saveInvestor = async () => {
-
     const {
       data: { insert_investor },
     } = await AddInvestor({
@@ -269,7 +266,7 @@ export const ListInvestors = () => {
 
   const [tableColumnExtensions] = useState([
     { columnName: "name", width: 200 },
-    { columnName: "investments", wordWrapEnabled: true }
+    { columnName: "investments", wordWrapEnabled: true },
   ]);
 
   const [employeeColumns] = useState(["name"]);
@@ -288,7 +285,13 @@ export const ListInvestors = () => {
           for={employeeColumns}
           formatterComponent={EmployeeFormatter}
         />
-        <SortingState sorting={sorting} onSortingChange={setSorting} />
+        <SortingState
+          sorting={sorting}
+          onSortingChange={setSorting}
+          columnExtensions={[
+            { columnName: "investments", sortingEnabled: false },
+          ]}
+        />
         <PagingState
           currentPage={currentPage}
           onCurrentPageChange={setCurrentPage}

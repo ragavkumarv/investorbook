@@ -180,8 +180,8 @@ export const CompanyDetails = () => {
     name: "",
   });
 
-  const removeInvestor = () => {
-    deleteInvestorMutation({ variables: { id: COMPANY_ID } });
+  const removeInvestor = async () => {
+    await deleteInvestorMutation({ variables: { id: +COMPANY_ID } });
     history.push("/");
   };
 

@@ -189,8 +189,8 @@ export const InvestorDetails = () => {
     photoLarge: "",
   });
 
-  const removeInvestor = () => {
-    deleteInvestorMutation({ variables: { id: INVESTOR_ID } });
+  const removeInvestor = async () => {
+    await deleteInvestorMutation({ variables: { id: +INVESTOR_ID } });
     history.push("/");
   };
 
