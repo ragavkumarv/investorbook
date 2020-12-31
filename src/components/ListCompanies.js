@@ -26,23 +26,18 @@ import {
   TableHeaderRow,
   PagingPanel,
   TableColumnResizing,
-  TableSelection
+  TableSelection,
 } from "@devexpress/dx-react-grid-material-ui";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 
 import { Loading } from "./loader/Loading";
 import { useQuery, useMutation } from "@apollo/client";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import FormGroup from "@material-ui/core/FormGroup";
-import TextField from "@material-ui/core/TextField";
 import { GET_COMPANIES, ADD_COMPANY } from "./gql";
 import { EmployeeFormatter } from "./EmployeeFormatter";
-import { useDebounce } from 'use-debounce';
+import { useDebounce } from "use-debounce";
+import { NewInvestor } from "./NewInvestor";
 
 const State = {
   addButton: "Add Company",
@@ -50,7 +45,7 @@ const State = {
   columns: [
     { name: "name", title: "Name" },
     { name: "investors", title: "Investors" },
-  ]
+  ],
 };
 
 const CurrencyFormatter = ({ value }) => (
@@ -68,7 +63,6 @@ const TableRow = ({
   highlighted,
   ...restProps
 }) => {
-
   const useStyles = makeStyles({
     selected: {
       backgroundColor: "rgba(0, 0, 0, 0.08)",
@@ -76,7 +70,7 @@ const TableRow = ({
     customRow: {
       "&:hover": {
         backgroundColor: "#F5F5F5",
-        cursor: 'pointer'
+        cursor: "pointer",
       },
     },
   });
@@ -89,13 +83,13 @@ const TableRow = ({
       className={{ [classes.selected]: highlighted, [classes.customRow]: true }}
       onClick={() => {
         onToggle();
-        history.push(`/company/${tableRow.row.id}`)
+        history.push(`/company/${tableRow.row.id}`);
       }}
     />
   );
 };
 
-const CustomToolbarMarkup = ({setOpenEditInvestor}) => (
+const CustomToolbarMarkup = ({ setOpenEditInvestor }) => (
   <Plugin name="customToolbarMarkup">
     <Template name="toolbarContent">
       <div
@@ -108,7 +102,11 @@ const CustomToolbarMarkup = ({setOpenEditInvestor}) => (
         <p style={{ fontWeight: 500, fontSize: "28px", lineHeight: "26px" }}>
           {State.heading}
         </p>
-        <Button onClick={() => setOpenEditInvestor(true)} variant="outlined" color="primary">
+        <Button
+          onClick={() => setOpenEditInvestor(true)}
+          variant="outlined"
+          color="primary"
+        >
           {State.addButton}
         </Button>
       </div>
@@ -117,60 +115,6 @@ const CustomToolbarMarkup = ({setOpenEditInvestor}) => (
     </Template>
   </Plugin>
 );
-
-
-
-const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
-  const type = "Add";
-  const groupName = 'Investor';
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.value });
-  };
-
-  const { name, photoThumbnail, photoLarge } = state;
-
-  return (
-    <Dialog
-      open={open}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle id="form-dialog-title">{type} {groupName}</DialogTitle>
-      <DialogContent>
-        <p>Please enter the details of the {groupName.toLowerCase()}.</p>
-        <FormGroup style={{ gap: "20px" }}>
-          <TextField
-            style={{ width: "500px" }}
-            name="name"
-            value={name}
-            onChange={handleChange}
-            label="Name"
-          />
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            setOpen(false);
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setOpen(false);
-            saveInvestor();
-          }}
-          color="primary"
-          disableElevation
-        >
-          {type} {groupName}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
 
 export const ListCompanies = () => {
   const [columns] = useState(State.columns);
@@ -251,7 +195,7 @@ export const ListCompanies = () => {
         photo_thumbnail: state.photoThumbnail,
       },
     });
-    
+
     history.push(`/company/${insert_company.returning[0].id}`);
   };
 
@@ -262,7 +206,7 @@ export const ListCompanies = () => {
   };
 
   const [tableColumnExtensions] = useState([
-    { columnName: State.columns[0].name, width: '25%' },
+    { columnName: State.columns[0].name, width: "25%" },
     { columnName: State.columns[1].name, wordWrapEnabled: true },
   ]);
 
@@ -276,6 +220,7 @@ export const ListCompanies = () => {
         state={state}
         setState={setState}
         saveInvestor={saveInvestor}
+        groupName="Company"
       />
       <Grid rows={rows} columns={columns}>
         <DataTypeProvider
@@ -300,11 +245,11 @@ export const ListCompanies = () => {
         <TableHeaderRow showSortingControls cellComponent={cellComponent} />
         <SelectionState />
         <TableSelection
-            selectByRowClick
-            highlightRow
-            rowComponent={TableRow}
-            showSelectionColumn={false}
-          />
+          selectByRowClick
+          highlightRow
+          rowComponent={TableRow}
+          showSelectionColumn={false}
+        />
 
         <SearchState onValueChange={typeSearch} />
 
@@ -312,7 +257,7 @@ export const ListCompanies = () => {
 
         <Toolbar />
         <SearchPanel />
-        <CustomToolbarMarkup  setOpenEditInvestor={setOpenEditInvestor} />
+        <CustomToolbarMarkup setOpenEditInvestor={setOpenEditInvestor} />
 
         {/* Paging */}
         <CustomPaging totalCount={totalCount} />

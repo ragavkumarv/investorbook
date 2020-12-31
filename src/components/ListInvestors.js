@@ -36,6 +36,8 @@ import { GET_INVESTORS, ADD_INVESTOR } from "./gql";
 import { Loading } from "./loader/Loading";
 import { EmployeeFormatter } from "./EmployeeFormatter";
 import { useDebounce } from 'use-debounce';
+import Snackbar from '@material-ui/core/Snackbar';
+import { NewInvestor } from "./NewInvestor";
 
 const CurrencyFormatter = ({ value }) => (
   <p style={{ fontSize: "12px", color: "#6C6C6C", fontWeight: 500 }}>{value}</p>
@@ -106,71 +108,6 @@ const CustomToolbarMarkup = ({ setOpenEditInvestor }) => (
   </Plugin>
 );
 
-const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
-  const type = "Add";
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.value });
-  };
-
-  const { name, photoThumbnail, photoLarge } = state;
-
-  return (
-    <Dialog
-      open={open}
-      // onClose={onCancelChanges}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle id="form-dialog-title">{type} Investor</DialogTitle>
-      <DialogContent>
-        <p>Please enter the details of the investor.</p>
-        <FormGroup style={{ gap: "20px" }}>
-          <TextField
-            style={{ width: "500px" }}
-            name="name"
-            value={name}
-            onChange={handleChange}
-            label="Name"
-          />
-          <TextField
-            style={{ width: "500px" }}
-            name="photoThumbnail"
-            value={photoThumbnail}
-            onChange={handleChange}
-            label="Photo thumbnail"
-          />
-          <TextField
-            style={{ width: "500px" }}
-            name="photoLarge"
-            value={photoLarge}
-            onChange={handleChange}
-            label="Photo large"
-          />
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            setOpen(false);
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setOpen(false);
-            saveInvestor();
-          }}
-          color="primary"
-          disableElevation
-        >
-          {type} Investor
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
 
 export const ListInvestors = () => {
   const [columns] = useState([
@@ -281,6 +218,7 @@ export const ListInvestors = () => {
         state={state}
         setState={setState}
         saveInvestor={saveInvestor}
+        groupName="Investor"
       />
       <Grid rows={rows} columns={columns}>
         <DataTypeProvider
