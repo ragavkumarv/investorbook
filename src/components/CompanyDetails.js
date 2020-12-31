@@ -15,15 +15,9 @@ import {
   TableEditColumn,
 } from "@devexpress/dx-react-grid-material-ui";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import FormGroup from "@material-ui/core/FormGroup";
 import MuiGrid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import React, { useEffect, useState } from "react";
 import { Loading } from "./loader/Loading";
 
@@ -49,59 +43,7 @@ import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 // const INVESTOR_ID = 100;
 import { PopupEditing } from "./helper/PopupEditing";
 import { Popup } from "./helper/Popup";
-
-
-
-const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.value });
-  };
-
-  const { name } = state;
-
-  return (
-    <Dialog
-      open={open}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle id="form-dialog-title">Edit Company</DialogTitle>
-      <DialogContent>
-        <p>Please enter the details of the company.</p>
-        <FormGroup style={{ gap: "20px" }}>
-          <TextField
-            style={{ width: "500px" }}
-            name="name"
-            value={name}
-            onChange={handleChange}
-            label="Name"
-          />
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            setOpen(false);
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setOpen(false);
-            saveInvestor();
-          }}
-          color="primary"
-          disableElevation
-        >
-          Edit Company
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
+import { EditInvestor } from "./EditInvestor";
 
 export const State = {
   addButton: "+ Add Investors",
@@ -311,9 +253,9 @@ export const CompanyDetails = () => {
 
   const [employeeColumns] = useState([State.columns[0].name]);
   const detail = {
-    type: 'Edit',
-    selectMenu: 'Investor'
-  }
+    type: "Edit",
+    selectMenu: "Investor",
+  };
 
   return (
     <Paper style={{ position: "relative" }}>
@@ -323,6 +265,7 @@ export const CompanyDetails = () => {
         state={state}
         setState={setState}
         saveInvestor={saveInvestor}
+        type="Company"
       />
       <InvestorSummary
         investor={data ? data.company[0] : { name: "" }}
@@ -361,6 +304,7 @@ export const CompanyDetails = () => {
           allInvestors={allInvestors}
           detail={detail}
         />
+        {/* Push action to Last column */}
         <Getter
           name="tableColumns"
           computed={({ tableColumns }) => {

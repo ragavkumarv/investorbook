@@ -43,71 +43,7 @@ import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 import { PopupEditing } from "./helper/PopupEditing";
 import { Popup } from "./helper/Popup";
-
-const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
-  const handleChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.value });
-  };
-
-  const { name, photoThumbnail, photoLarge } = state;
-
-  return (
-    <Dialog
-      open={open}
-      // onClose={onCancelChanges}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle id="form-dialog-title">Edit Investor</DialogTitle>
-      <DialogContent>
-        <p>Please enter the details of the investor.</p>
-        <FormGroup style={{ gap: "20px" }}>
-          <TextField
-            style={{ width: "500px" }}
-            name="name"
-            value={name}
-            onChange={handleChange}
-            label="Name"
-          />
-          <TextField
-            style={{ width: "500px" }}
-            name="photoThumbnail"
-            value={photoThumbnail}
-            onChange={handleChange}
-            label="Photo thumbnail"
-          />
-          <TextField
-            style={{ width: "500px" }}
-            name="photoLarge"
-            value={photoLarge}
-            onChange={handleChange}
-            label="Photo large"
-          />
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            setOpen(false);
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            setOpen(false);
-            saveInvestor();
-          }}
-          color="primary"
-          disableElevation
-        >
-          Edit Investor
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+import { EditInvestor } from "./EditInvestor";
 
 export const State = {
   addButton: "+ Add Investments",
@@ -336,6 +272,7 @@ export const InvestorDetails = () => {
         state={state}
         setState={setState}
         saveInvestor={saveInvestor}
+        type="Investor"
       />
       <InvestorSummary
         investor={data ? data.investor[0] : { name: "", photo_large: "" }}
@@ -374,6 +311,7 @@ export const InvestorDetails = () => {
           allCompanies={allCompanies}
           detail={detail}
         />
+        {/* Push action to Last column */}
         <Getter
           name="tableColumns"
           computed={({ tableColumns }) => {
