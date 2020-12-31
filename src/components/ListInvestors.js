@@ -285,11 +285,11 @@ export const ListInvestors = () => {
   useEffect(() => loadData(), [loading, currentPage]);
 
   const typeSearch = (value) => {
-    setSearchValue(value + "%");
+    setSearchValue("%" + value + "%");
   };
 
   const [tableColumnExtensions] = useState([
-    { columnName: "photo_thumbnail", width: 200 },
+    { columnName: "photo_thumbnail", width: '25%' },
     { columnName: "investments", wordWrapEnabled: true },
   ]);
 

@@ -39,7 +39,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from "react-router-dom";
-import { Command } from "./Command";
+import { Command } from "./helper/Command";
 import {
   ADD_INVESTMENT,
   GET_COMPANY_DETAIL,
@@ -50,8 +50,8 @@ import {
   DELETE_INVESTMENT,
 } from "./gql";
 import { EmployeeFormatter } from "./EmployeeFormatter";
-import { CurrencyTypeProvider } from "./CurrencyFormatter";
-import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
+import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
+import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 // const INVESTOR_ID = 100;
 
 const Popup = ({

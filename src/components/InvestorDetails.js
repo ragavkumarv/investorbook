@@ -40,11 +40,11 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from 'react-router-dom';
-import { Command } from "./Command";
+import { Command } from "./helper/Command";
 import { ADD_INVESTMENT, GET_INVESTOR_DETAIL, GET_ALL_COMPANIES, UPDATE_INVESTMENT, UPDATE_INVESTOR, DELETE_INVESTOR, DELETE_INVESTMENT } from "./gql";
 import { EmployeeFormatter } from "./EmployeeFormatter";
-import { CurrencyTypeProvider } from "./CurrencyFormatter";
-import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
+import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
+import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 
 const Popup = ({
   row,
@@ -96,7 +96,6 @@ const Popup = ({
         <Button
           onClick={() => {
             onCancelChanges();
-            // refresh();
           }}
           color="primary"
         >
@@ -105,7 +104,6 @@ const Popup = ({
         <Button
           variant="contained"
           onClick={() => {
-            // onApplyChanges({ ...row, amount})
             onApplyChanges();
           }}
           color="primary"

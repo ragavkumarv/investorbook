@@ -279,11 +279,11 @@ export const ListCompanies = () => {
   useEffect(() => loadData(), [loading, currentPage]);
 
   const typeSearch = (value) => {
-    setSearchValue(value + "%");
+    setSearchValue("%" + value + "%");
   };
 
   const [tableColumnExtensions] = useState([
-    { columnName: State.columns[0].name, width: 200 },
+    { columnName: State.columns[0].name, width: '25%' },
     { columnName: State.columns[1].name, wordWrapEnabled: true },
   ]);
 
