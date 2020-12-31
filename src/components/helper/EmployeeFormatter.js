@@ -9,7 +9,7 @@ export const EmployeeFormatter = ({ row }) =>
       alignItems: "center",
     }}
   >
-    {'investments' in row ? <div>
+    {row.photo_thumbnail || 'investments' in row ? <div>
       <img
         src={row.photo_thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQACGFpr0iqURE_6EHYMm-AGXfhXC1Nzf4ucA&usqp=CAU"}
         style={{
