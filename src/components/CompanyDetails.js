@@ -41,7 +41,8 @@ import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from "react-router-dom";
 import { Command } from "./Command";
 import { ADD_INVESTMENT, GET_COMPANY_DETAIL, GET_ALL_INVESTORS, UPDATE_INVESTMENT, UPDATE_COMPANY, DELETE_INVESTOR, DELETE_INVESTMENT } from "./gql";
-
+import { EmployeeFormatter } from "./EmployeeFormatter";
+import { CurrencyTypeProvider } from "./CurrencyFormatter";
 // const INVESTOR_ID = 100;
 
 const Popup = ({
@@ -261,40 +262,6 @@ export const State = {
     { name: "amount", title: "Amount" },
   ],
 };
-
-const CurrencyFormatter = ({ value }) => (
-  <p style={{ textAlign: "left", color: "#242424", fontSize: "12px" }}>
-    {value.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-  </p>
-);
-
-const CurrencyTypeProvider = (props) => (
-  <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
-);
-
-const EmployeeFormatter = ({ row }) => (
-  <div
-    style={{
-      display: "flex",
-      gap: "14px",
-      alignItems: "center",
-    }}
-  >
-    <div>
-      <img
-        src={row.photo_thumbnail}
-        style={{
-          height: "38px",
-          width: "38px",
-          borderRadius: "50%",
-          margin: "0 auto",
-        }}
-        alt="Avatar"
-      />
-    </div>
-    {row.name}
-  </div>
-);
 
 const CustomToolbarMarkup = () => (
   <Plugin name="customToolbarMarkup">
