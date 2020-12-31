@@ -1,40 +1,28 @@
-# Getting started
+# Solution
 
-You can view a live demo of the webclient at:
+### InvestorBook
 
-https://investorbook.herokuapp.com/
+Welcome to InvestorBook, Inc! This is your first week at InvestorBook and you
+are excited to build on top of the data. The dataset contains three tables:
+Investors, Companies, and Investments.
 
-## Postgress Access
 
-You can use this URI to connect to Postgres directly:
+### Features
+1. List all Investors, Companies
+2. Navigate to Investor & Company details when clicked on the list respectively
+3. Search capability to filter Investors & companies by name
+4. Used Debounce for search
+4. Sort Investors & Companies
+5. Add new Companies and new Investors and respective investments
+6. Remove Company, Investor & Investment made
+7. Add, Edit each Investment made
+8. Pagination on Companies, Investors
+9. Logo Navigation
+10. Formatting on amount of investment
 
-`postgres://postgres:vrqLs08CazD0j6l8@35.194.8.164:5432`
+### Improvement Area
+1. Autocomplete could be added to improve the perfomance when choosing a investor from the list all available investor & company
 
-## Hasura Access
 
-If you would prefer to use a GraphQL API, you can use this endpoint:
-
-https://electric-kangaroo-87.hasura.app/v1/graphql
-
-## Webclient Sample App
-
-If you have docker and docker-compose installed on your system, you can start
-the sample webclient with `docker-compose up`. The address will be
-http://localhost:3001.
-
-If you prefer, you can instead run `yarn install` and `yarn start` in the
-`webclient/` subdirectory.
-
-## Submitting Your Solution
-
-To submit your solution, please deploy your app and send us a link to the live
-demo along with a zip file containing the source code.
-
-If you'd like to use Heroku for the deploy, you can run these commands to deploy
-the app in your Heroku account:
-
-```
-heroku git:remote -a {your_app_name}
-heroku buildpacks:set marks/create-react-app
-git push heroku master
-```
+### App live URL
+https://investmentbook.herokuapp.com
