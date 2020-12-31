@@ -1,38 +1,37 @@
-import React, { useState, useEffect } from "react";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
-import {
-  SearchState,
-  DataTypeProvider,
-  PagingState,
-  IntegratedPaging,
-  CustomPaging,
-  SelectionState
-} from "@devexpress/dx-react-grid";
-
+import { gql, useQuery, useMutation } from "@apollo/client";
 import {
   Plugin,
   Template,
   TemplatePlaceholder,
 } from "@devexpress/dx-react-core";
-
+import {
+  CustomPaging,
+  DataTypeProvider,
+  PagingState,
+  SearchState,
+  SelectionState,
+} from "@devexpress/dx-react-grid";
 import {
   Grid,
-  Toolbar,
-  Table,
-  SearchPanel,
-  VirtualTable,
-  TableHeaderRow,
   PagingPanel,
-  TableColumnResizing,
-  TableSelection
+  SearchPanel,
+  Table,
+  TableHeaderRow,
+  TableSelection,
+  Toolbar,
 } from "@devexpress/dx-react-grid-material-ui";
-import { useHistory } from 'react-router-dom';
-
 import Button from "@material-ui/core/Button";
-
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormGroup from "@material-ui/core/FormGroup";
+import Paper from "@material-ui/core/Paper";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import { default as React, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Loading } from "./loader/Loading";
-import { useQuery, gql } from "@apollo/client";
 
 const CurrencyFormatter = ({ value }) => (
   <p style={{ fontSize: "12px", color: "#6C6C6C", fontWeight: 500 }}>{value}</p>
@@ -50,7 +49,7 @@ const TableRow = ({ tableRow, onToggle, ...restProps }) => {
       onClick={() => {
         onToggle();
         console.log(tableRow);
-        history.push(`/investor/${tableRow.row.id}`)
+        history.push(`/investor/${tableRow.row.id}`);
         // alert(JSON.stringify(tableRow));
       }}
     />
@@ -81,7 +80,7 @@ const EmployeeFormatter = ({ row }) => (
   </div>
 );
 
-const CustomToolbarMarkup = () => (
+const CustomToolbarMarkup = ({ setOpenEditInvestor }) => (
   <Plugin name="customToolbarMarkup">
     <Template name="toolbarContent">
       <div
@@ -94,7 +93,11 @@ const CustomToolbarMarkup = () => (
         <p style={{ fontWeight: 500, fontSize: "28px", lineHeight: "26px" }}>
           Investors
         </p>
-        <Button variant="outlined" color="primary">
+        <Button
+          onClick={() => setOpenEditInvestor(true)}
+          variant="outlined"
+          color="primary"
+        >
           Add Investor
         </Button>
       </div>
@@ -129,11 +132,101 @@ const GET_INVESTORS = gql`
   }
 `;
 
+const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
+  const type = "Add";
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.value });
+  };
+
+  const { name, photoThumbnail, photoLarge } = state;
+
+  return (
+    <Dialog
+      open={open}
+      // onClose={onCancelChanges}
+      aria-labelledby="form-dialog-title"
+    >
+      <DialogTitle id="form-dialog-title">{type} Investor</DialogTitle>
+      <DialogContent>
+        <p>Please enter the details of the investor.</p>
+        <FormGroup style={{ gap: "20px" }}>
+          <TextField
+            style={{ width: "500px" }}
+            name="name"
+            value={name}
+            onChange={handleChange}
+            label="Name"
+          />
+          <TextField
+            style={{ width: "500px" }}
+            name="photoThumbnail"
+            value={photoThumbnail}
+            onChange={handleChange}
+            label="Photo thumbnail"
+          />
+          <TextField
+            style={{ width: "500px" }}
+            name="photoLarge"
+            value={photoLarge}
+            onChange={handleChange}
+            label="Photo large"
+          />
+        </FormGroup>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => {
+            setOpen(false);
+          }}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setOpen(false);
+            saveInvestor();
+          }}
+          color="primary"
+          disableElevation
+        >
+          {type} Investor
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const ADD_INVESTOR = gql`
+  mutation AddInvestor(
+    $name: String
+    $photo_large: String
+    $photo_thumbnail: String
+  ) {
+    insert_investor(
+      objects: {
+        name: $name
+        photo_large: $photo_large
+        photo_thumbnail: $photo_thumbnail
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const ListInvestors = () => {
   const [columns] = useState([
     { name: "photo_thumbnail", title: "Name" },
     { name: "investments", title: "Investments" },
   ]);
+
+  const history = useHistory();
 
   const useStyles = makeStyles({
     headerRow: {
@@ -172,20 +265,44 @@ export const ListInvestors = () => {
   });
 
   const [rows, setRows] = useState([]);
+  const [openEditInvestor, setOpenEditInvestor] = useState(false);
+  const [state, setState] = useState({
+    name: "",
+    photoThumbnail: "",
+    photoLarge: "",
+  });
 
   const loadData = () => {
     if (rows && !data) return;
     setRows(
       data.investor.map((detail) => ({
         ...detail,
-        investments: detail.investments
-          .map(({ company }) => company.name)
-          .sort()
-          .join(", ")|| 'Yet to Invest',
+        investments:
+          detail.investments
+            .map(({ company }) => company.name)
+            .sort()
+            .join(", ") || "Yet to Invest",
       }))
     );
     console.log(data.investor_aggregate.aggregate.count);
     setTotalCount(data.investor_aggregate.aggregate.count);
+  };
+
+  const [AddInvestor] = useMutation(ADD_INVESTOR);
+
+  const saveInvestor = async () => {
+    // console.log(state);
+    const {
+      data: { insert_investor },
+    } = await AddInvestor({
+      variables: {
+        name: state.name,
+        photo_large: state.photoLarge,
+        photo_thumbnail: state.photoThumbnail,
+      },
+    });
+    
+    history.push(`/investor/${insert_investor.returning[0].id}`);
   };
 
   useEffect(() => loadData(), [loading, currentPage]);
@@ -203,6 +320,13 @@ export const ListInvestors = () => {
 
   return (
     <Paper style={{ position: "relative" }}>
+      <NewInvestor
+        open={openEditInvestor}
+        setOpen={setOpenEditInvestor}
+        state={state}
+        setState={setState}
+        saveInvestor={saveInvestor}
+      />
       <Grid rows={rows} columns={columns}>
         <DataTypeProvider
           for={employeeColumns}
@@ -219,11 +343,11 @@ export const ListInvestors = () => {
         <TableHeaderRow cellComponent={cellComponent} />
         <SelectionState />
         <TableSelection
-            selectByRowClick
-            highlightRow
-            rowComponent={TableRow}
-            showSelectionColumn={false}
-          />
+          selectByRowClick
+          highlightRow
+          rowComponent={TableRow}
+          showSelectionColumn={false}
+        />
 
         <SearchState onValueChange={typeSearch} />
 
@@ -231,7 +355,7 @@ export const ListInvestors = () => {
 
         <Toolbar />
         <SearchPanel />
-        <CustomToolbarMarkup />
+        <CustomToolbarMarkup setOpenEditInvestor={setOpenEditInvestor} />
 
         {/* Paging */}
         <CustomPaging totalCount={totalCount} />
