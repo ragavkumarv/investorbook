@@ -32,13 +32,14 @@ import { useHistory } from 'react-router-dom';
 import Button from "@material-ui/core/Button";
 
 import { Loading } from "./loader/Loading";
-import { useQuery, gql, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormGroup from "@material-ui/core/FormGroup";
 import TextField from "@material-ui/core/TextField";
+import { GET_INVESTORS, ADD_INVESTOR } from "./GET_INVESTORS";
 
 const State = {
   addButton: "Add Company",
@@ -140,29 +141,7 @@ const CustomToolbarMarkup = ({setOpenEditInvestor}) => (
   </Plugin>
 );
 
-const GET_INVESTORS = gql`
-  query GetInvestors($search: String, $offsetBy: Int, $limitBy: Int) {
-    company(
-      limit: $limitBy
-      offset: $offsetBy
-      where: { name: { _ilike: $search } }
-    ) {
-      investments {
-        investor {
-          name
-        }
-      }
-      id
-      name
-    }
 
-    company_aggregate(where: { name: { _ilike: $search } }) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
 
 const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   const type = "Add";
@@ -215,24 +194,6 @@ const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
     </Dialog>
   );
 };
-
-const ADD_INVESTOR = gql`
-  mutation AddInvestor(
-    $name: String
-  ) {
-    insert_company(
-      objects: {
-        name: $name
-      }
-    ) {
-      affected_rows
-      returning {
-        id
-        name
-      }
-    }
-  }
-`;
 
 export const ListCompanies = () => {
   const [columns] = useState(State.columns);

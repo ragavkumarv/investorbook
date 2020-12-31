@@ -1,4 +1,4 @@
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   Plugin,
   Template,
@@ -40,6 +40,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from "react-router-dom";
 import { Command } from "./Command";
+import { ADD_INVESTMENT, GET_COMPANY_DETAIL, GET_ALL_INVESTORS, UPDATE_INVESTMENT, UPDATE_COMPANY, DELETE_INVESTOR, DELETE_INVESTMENT } from "./ADD_INVESTMENT";
 
 // const INVESTOR_ID = 100;
 
@@ -350,94 +351,6 @@ const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
     </div>
   );
 };
-
-const ADD_INVESTMENT = gql`
-  mutation AddInvestment(
-    $amount: numeric
-    $investor_id: Int
-    $company_id: Int
-  ) {
-    insert_investment(
-      objects: {
-        amount: $amount
-        investor_id: $investor_id
-        company_id: $company_id
-      }
-    ) {
-      returning {
-        id
-      }
-    }
-  }
-`;
-
-const GET_COMPANY_DETAIL = gql`
-  query GetCompanyDetail($id: Int) {
-    company(where: { id: { _eq: $id } }) {
-      id
-      name
-      investments(order_by: { created_at: desc }) {
-        id
-        amount
-        investor {
-          id
-          name
-          photo_thumbnail
-        }
-      }
-    }
-  }
-`;
-
-const GET_ALL_INVESTORS = gql`
-  query GetAllInvestors {
-    investor(distinct_on: name, limit: 10) {
-      id
-      name
-    }
-  }
-`;
-
-const UPDATE_INVESTMENT = gql`
-  mutation UpdateInvestment($id: Int, $amount: numeric, $company_id: Int) {
-    update_investment(
-      where: { id: { _eq: $id } }
-      _set: { amount: $amount, company_id: $company_id }
-    ) {
-      affected_rows
-      returning {
-        amount
-        company {
-          name
-        }
-      }
-    }
-  }
-`;
-
-const UPDATE_COMPANY = gql`
-  mutation UpdateCompany($id: Int, $name: String) {
-    update_company(where: { id: { _eq: $id } }, _set: { name: $name }) {
-      affected_rows
-    }
-  }
-`;
-
-const DELETE_INVESTMENT = gql`
-  mutation DeleteInvestment($id: Int) {
-    delete_investment(where: { id: { _eq: $id } }) {
-      affected_rows
-    }
-  }
-`;
-
-const DELETE_INVESTOR = gql`
-  mutation DeleteInvestor($id: Int) {
-    delete_company(where: { id: { _eq: $id } }) {
-      affected_rows
-    }
-  }
-`;
 
 export const CompanyDetails = () => {
   const { id: COMPANY_ID } = useParams();

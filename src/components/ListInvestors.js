@@ -1,4 +1,4 @@
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   Plugin,
   Template,
@@ -31,6 +31,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { default as React, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { GET_INVESTORS, ADD_INVESTOR } from "./ADD_INVESTOR";
 import { Loading } from "./loader/Loading";
 
 const CurrencyFormatter = ({ value }) => (
@@ -128,31 +129,6 @@ const CustomToolbarMarkup = ({ setOpenEditInvestor }) => (
   </Plugin>
 );
 
-const GET_INVESTORS = gql`
-  query GetInvestors($search: String, $offsetBy: Int, $limitBy: Int) {
-    investor(
-      limit: $limitBy
-      offset: $offsetBy
-      where: { name: { _ilike: $search } }
-    ) {
-      investments {
-        company {
-          name
-        }
-      }
-      id
-      name
-      photo_thumbnail
-    }
-
-    investor_aggregate(where: { name: { _ilike: $search } }) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
 const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   const type = "Add";
   const handleChange = (event) => {
@@ -219,27 +195,7 @@ const NewInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   );
 };
 
-const ADD_INVESTOR = gql`
-  mutation AddInvestor(
-    $name: String
-    $photo_large: String
-    $photo_thumbnail: String
-  ) {
-    insert_investor(
-      objects: {
-        name: $name
-        photo_large: $photo_large
-        photo_thumbnail: $photo_thumbnail
-      }
-    ) {
-      affected_rows
-      returning {
-        id
-        name
-      }
-    }
-  }
-`;
+
 
 export const ListInvestors = () => {
   const [columns] = useState([
