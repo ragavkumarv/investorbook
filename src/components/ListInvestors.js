@@ -1,9 +1,4 @@
-import { useQuery, useMutation } from "@apollo/client";
-import {
-  Plugin,
-  Template,
-  TemplatePlaceholder,
-} from "@devexpress/dx-react-core";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   CustomPaging,
   DataTypeProvider,
@@ -21,31 +16,22 @@ import {
   TableSelection,
   Toolbar,
 } from "@devexpress/dx-react-grid-material-ui";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import FormGroup from "@material-ui/core/FormGroup";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
 import { default as React, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { GET_INVESTORS, ADD_INVESTOR } from "./gql";
-import { Loading } from "./loader/Loading";
+import { useDebounce } from "use-debounce";
+import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
 import { EmployeeFormatter } from "./EmployeeFormatter";
-import { useDebounce } from 'use-debounce';
-import Snackbar from '@material-ui/core/Snackbar';
+import { ADD_INVESTOR, GET_INVESTORS } from "./gql";
+import { GroupTypeProvider } from "./groupListFormatter";
+import { Loading } from "./loader/Loading";
 import { NewInvestor } from "./NewInvestor";
 
-const CurrencyFormatter = ({ value }) => (
-  <p style={{ fontSize: "12px", color: "#6C6C6C", fontWeight: 500 }}>{value}</p>
-);
-
-const CurrencyTypeProvider = (props) => (
-  <DataTypeProvider formatterComponent={CurrencyFormatter} {...props} />
-);
+const State = {
+  addButton: "Add Investor",
+  heading: "Investors",
+};
 
 const TableRow = ({
   className,
@@ -81,34 +67,6 @@ const TableRow = ({
   );
 };
 
-const CustomToolbarMarkup = ({ setOpenEditInvestor }) => (
-  <Plugin name="customToolbarMarkup">
-    <Template name="toolbarContent">
-      <div
-        style={{
-          display: "flex",
-          gap: "14px",
-          alignItems: "center",
-        }}
-      >
-        <p style={{ fontWeight: 500, fontSize: "28px", lineHeight: "26px" }}>
-          Investors
-        </p>
-        <Button
-          onClick={() => setOpenEditInvestor(true)}
-          variant="outlined"
-          color="primary"
-        >
-          Add Investor
-        </Button>
-      </div>
-
-      <TemplatePlaceholder />
-    </Template>
-  </Plugin>
-);
-
-
 export const ListInvestors = () => {
   const [columns] = useState([
     { name: "name", title: "Name" },
@@ -139,7 +97,7 @@ export const ListInvestors = () => {
   const [searchValue, setSearchValue] = useState("%%");
   const [debounceSearch] = useDebounce(searchValue, 1000);
 
-  const [currencyColumns] = useState(["investments"]);
+  const [investorsColumn] = useState(["investments"]);
 
   //Paging
   const [pageSize, setPageSize] = useState(pageSizes[1]);
@@ -251,11 +209,14 @@ export const ListInvestors = () => {
 
         <SearchState onValueChange={typeSearch} />
 
-        <CurrencyTypeProvider for={currencyColumns} />
+        <GroupTypeProvider for={investorsColumn} />
 
         <Toolbar />
         <SearchPanel />
-        <CustomToolbarMarkup setOpenEditInvestor={setOpenEditInvestor} />
+        <CustomToolbarMarkup
+          setOpenEditInvestor={setOpenEditInvestor}
+          State={State}
+        />
 
         {/* Paging */}
         <CustomPaging totalCount={totalCount} />
