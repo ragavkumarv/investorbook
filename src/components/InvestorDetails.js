@@ -44,6 +44,7 @@ import { Command } from "./Command";
 import { ADD_INVESTMENT, GET_INVESTOR_DETAIL, GET_ALL_COMPANIES, UPDATE_INVESTMENT, UPDATE_INVESTOR, DELETE_INVESTOR, DELETE_INVESTMENT } from "./gql";
 import { EmployeeFormatter } from "./EmployeeFormatter";
 import { CurrencyTypeProvider } from "./CurrencyFormatter";
+import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
 
 const Popup = ({
   row,
@@ -266,7 +267,7 @@ const PopupEditing = React.memo(({ popupComponent: Popup, allCompanies }) => {
   );
 });
 
-const State = {
+export const State = {
   addButton: "+ Add Investments",
   heading: "Investments",
   columns: [
@@ -275,32 +276,12 @@ const State = {
   ],
 };
 
-const CustomToolbarMarkup = () => (
-  <Plugin name="customToolbarMarkup">
-    <Template name="toolbarContent">
-      <div
-        style={{
-          display: "flex",
-          gap: "14px",
-          alignItems: "center",
-        }}
-      >
-        <p style={{ fontWeight: 500, fontSize: "15px", lineHeight: "14px" }}>
-          {State.heading}
-        </p>
-      </div>
-
-      <TemplatePlaceholder />
-    </Template>
-  </Plugin>
-);
-
 const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "80px 6fr 2fr" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
         <img
-          src={investor.photo_large}
+          src={investor.photo_large ||"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQACGFpr0iqURE_6EHYMm-AGXfhXC1Nzf4ucA&usqp=CAU" }
           style={{
             height: "50px",
             width: "50px",
@@ -531,7 +512,7 @@ export const InvestorDetails = () => {
         <CurrencyTypeProvider for={currencyColumns} />
 
         <Toolbar />
-        <CustomToolbarMarkup />
+        <CustomToolbarMarkup state={State} />
 
         <TableEditColumn
           showAddCommand

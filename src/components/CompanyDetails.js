@@ -40,9 +40,18 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from "react-router-dom";
 import { Command } from "./Command";
-import { ADD_INVESTMENT, GET_COMPANY_DETAIL, GET_ALL_INVESTORS, UPDATE_INVESTMENT, UPDATE_COMPANY, DELETE_INVESTOR, DELETE_INVESTMENT } from "./gql";
+import {
+  ADD_INVESTMENT,
+  GET_COMPANY_DETAIL,
+  GET_ALL_INVESTORS,
+  UPDATE_INVESTMENT,
+  UPDATE_COMPANY,
+  DELETE_INVESTOR,
+  DELETE_INVESTMENT,
+} from "./gql";
 import { EmployeeFormatter } from "./EmployeeFormatter";
 import { CurrencyTypeProvider } from "./CurrencyFormatter";
+import { CustomToolbarMarkup } from "./CustomToolbarMarkup";
 // const INVESTOR_ID = 100;
 
 const Popup = ({
@@ -127,7 +136,6 @@ const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   return (
     <Dialog
       open={open}
-      // onClose={onCancelChanges}
       aria-labelledby="form-dialog-title"
     >
       <DialogTitle id="form-dialog-title">Edit Company</DialogTitle>
@@ -262,26 +270,6 @@ export const State = {
     { name: "amount", title: "Amount" },
   ],
 };
-
-const CustomToolbarMarkup = () => (
-  <Plugin name="customToolbarMarkup">
-    <Template name="toolbarContent">
-      <div
-        style={{
-          display: "flex",
-          gap: "14px",
-          alignItems: "center",
-        }}
-      >
-        <p style={{ fontWeight: 500, fontSize: "15px", lineHeight: "14px" }}>
-          {State.heading}
-        </p>
-      </div>
-
-      <TemplatePlaceholder />
-    </Template>
-  </Plugin>
-);
 
 const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
   return (
@@ -459,7 +447,7 @@ export const CompanyDetails = () => {
         id: detail.id,
         name: detail.investor.name,
         amount: detail.amount,
-        photo_thumbnail: detail.investor.photo_thumbnail
+        photo_thumbnail: detail.investor.photo_thumbnail,
       }))
     );
 
@@ -510,7 +498,7 @@ export const CompanyDetails = () => {
         <CurrencyTypeProvider for={currencyColumns} />
 
         <Toolbar />
-        <CustomToolbarMarkup />
+        <CustomToolbarMarkup state={State} />
 
         <TableEditColumn
           showAddCommand
@@ -542,5 +530,3 @@ export const CompanyDetails = () => {
     </Paper>
   );
 };
-
-
