@@ -27,6 +27,7 @@ import { ADD_COMPANY, GET_COMPANIES } from "./gql";
 import { GroupTypeProvider } from "./groupListFormatter";
 import { Loading } from "./loader/Loading";
 import { NewInvestor } from "./NewInvestor";
+import { HighlightRowOnHover } from "./HighlightRowOnHover";
 
 const State = {
   addButton: "Add Company",
@@ -35,39 +36,6 @@ const State = {
     { name: "name", title: "Name" },
     { name: "investors", title: "Investors" },
   ],
-};
-
-const TableRow = ({
-  className,
-  tableRow,
-  onToggle,
-  highlighted,
-  ...restProps
-}) => {
-  const useStyles = makeStyles({
-    selected: {
-      backgroundColor: "rgba(0, 0, 0, 0.08)",
-    },
-    customRow: {
-      "&:hover": {
-        backgroundColor: "#F5F5F5",
-        cursor: "pointer",
-      },
-    },
-  });
-
-  const classes = useStyles();
-  const history = useHistory();
-  return (
-    <TableSelection.Row
-      {...restProps}
-      className={{ [classes.selected]: highlighted, [classes.customRow]: true }}
-      onClick={() => {
-        onToggle();
-        history.push(`/company/${tableRow.row.id}`);
-      }}
-    />
-  );
 };
 
 export const ListCompanies = () => {
@@ -188,12 +156,7 @@ export const ListCompanies = () => {
             { columnName: "investors", sortingEnabled: false },
           ]}
         />
-        <PagingState
-          currentPage={currentPage}
-          onCurrentPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-        />
+
         <Table columnExtensions={tableColumnExtensions} />
 
         <TableHeaderRow showSortingControls cellComponent={cellComponent} />
@@ -201,7 +164,7 @@ export const ListCompanies = () => {
         <TableSelection
           selectByRowClick
           highlightRow
-          rowComponent={TableRow}
+          rowComponent={HighlightRowOnHover}
           showSelectionColumn={false}
         />
 
@@ -217,6 +180,12 @@ export const ListCompanies = () => {
         />
 
         {/* Paging */}
+        <PagingState
+          currentPage={currentPage}
+          onCurrentPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
         <CustomPaging totalCount={totalCount} />
         <PagingPanel pageSizes={pageSizes} />
       </Grid>

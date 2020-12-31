@@ -12,12 +12,12 @@ export const Command = ({ id, onExecute, disabled }) => {
 };
 const EditButton = ({ onExecute, disabled }) => (
   <IconButton onClick={onExecute} disabled={disabled} aria-label="delete">
-    <EditIcon color="default" fontSize="small" />
+    <EditIcon fontSize="small" />
   </IconButton>
 );
 const DeleteButton = ({ onExecute, disabled }) => (
   <IconButton onClick={onExecute} disabled={disabled} aria-label="delete">
-    <DeleteIcon color="default" fontSize="small" />
+    <DeleteIcon fontSize="small" />
   </IconButton>
 );
 const AddButton = ({ onExecute, disabled }) => (
