@@ -32,12 +32,6 @@ import { EditingState } from "@devexpress/dx-react-grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import AddIcon from "@material-ui/icons/Add";
-import FormControl from "@material-ui/core/FormControl";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 import { useHistory, useParams } from "react-router-dom";
 import { Command } from "./helper/Command";
 import {
@@ -53,78 +47,10 @@ import { EmployeeFormatter } from "./EmployeeFormatter";
 import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 // const INVESTOR_ID = 100;
+import { PopupEditing } from "./PopupEditing";
+import { Popup } from "./Popup";
 
-const Popup = ({
-  row,
-  onChange,
-  onApplyChanges,
-  onCancelChanges,
-  open,
-  refresh,
-  allCompanies,
-}) => {
-  console.log(row, allCompanies);
-  return (
-    <Dialog
-      open={open}
-      onClose={onCancelChanges}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle id="form-dialog-title">Add Investment</DialogTitle>
-      <DialogContent>
-        <p>Please enter the details of the investment.</p>
 
-        <FormGroup style={{ gap: "10px" }}>
-          <FormControl>
-            <InputLabel>Select Investor</InputLabel>
-            <Select
-              value={row.investorId || ""}
-              onChange={(event) => onChange("investorId", event.target.value)}
-            >
-              {(allCompanies ? allCompanies.investor : []).map((investor) => (
-                <MenuItem value={investor.id}>{investor.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth>
-            <InputLabel>Amount</InputLabel>
-            <Input
-              id="standard-adornment-amount"
-              type="number"
-              value={row.amount || ""}
-              onChange={(event) => onChange("amount", event.target.value)}
-              startAdornment={
-                <InputAdornment position="start">$</InputAdornment>
-              }
-            />
-          </FormControl>
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            onCancelChanges();
-            // refresh();
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            // onApplyChanges({ ...row, amount})
-            onApplyChanges();
-          }}
-          color="primary"
-          disableElevation
-        >
-          Add Investor
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
 
 const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   const handleChange = (event) => {
@@ -176,89 +102,6 @@ const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   );
 };
 
-const PopupEditing = React.memo(({ popupComponent: Popup, allInvestors }) => {
-  return (
-    <Plugin>
-      <Template name="popupEditing">
-        <TemplateConnector>
-          {(
-            {
-              addedRows,
-              rows,
-              getRowId,
-              editingRowIds,
-              createRowChange,
-              rowChanges,
-            },
-            {
-              changeRow,
-              commitChangedRows,
-              stopEditRows,
-              cancelAddedRows,
-              commitAddedRows,
-              changeAddedRow,
-            }
-          ) => {
-            const isAddMode = addedRows.length > 0;
-            const isEditMode = editingRowIds.length > 0;
-
-            const editRowId = editingRowIds[0] || 0;
-
-            const open = isEditMode || isAddMode;
-            const targetRow = rows.filter(
-              (row) => getRowId(row) === editRowId
-            )[0];
-            const changedRow = isAddMode
-              ? addedRows[0]
-              : { ...targetRow, ...rowChanges[editRowId] };
-
-            const processValueChange = (fieldName, newValue) => {
-              const changeArgs = {
-                rowId: editRowId,
-                change: createRowChange(changedRow, newValue, fieldName),
-              };
-
-              if (isAddMode) {
-                changeAddedRow(changeArgs);
-              } else {
-                changeRow(changeArgs);
-              }
-            };
-            const applyChanges = () => {
-              if (isEditMode) {
-                commitChangedRows({ rowIds: editingRowIds });
-              } else {
-                commitAddedRows({ rowIds: [0] });
-              }
-              stopEditRows({ rowIds: editingRowIds });
-            };
-            const cancelChanges = () => {
-              if (isAddMode) {
-                cancelAddedRows({ rowIds: [0] });
-              }
-              stopEditRows({ rowIds: editingRowIds });
-            };
-
-            return (
-              <Popup
-                open={open}
-                row={changedRow}
-                onChange={processValueChange}
-                onApplyChanges={applyChanges}
-                onCancelChanges={cancelChanges}
-                allCompanies={allInvestors}
-              />
-            );
-          }}
-        </TemplateConnector>
-      </Template>
-      <Template name="root">
-        <TemplatePlaceholder />
-        <TemplatePlaceholder name="popupEditing" />
-      </Template>
-    </Plugin>
-  );
-});
 
 export const State = {
   addButton: "+ Add Investors",
@@ -467,6 +310,10 @@ export const CompanyDetails = () => {
   ]);
 
   const [employeeColumns] = useState([State.columns[0].name]);
+  const detail = {
+    type: 'Edit',
+    selectMenu: 'Investor'
+  }
 
   return (
     <Paper style={{ position: "relative" }}>
@@ -512,6 +359,7 @@ export const CompanyDetails = () => {
           updateInvestment={updateInvestment}
           open={true}
           allInvestors={allInvestors}
+          detail={detail}
         />
         <Getter
           name="tableColumns"

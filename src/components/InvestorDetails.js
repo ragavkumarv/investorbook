@@ -1,9 +1,5 @@
 import { useQuery, useMutation } from "@apollo/client";
 import {
-  Plugin,
-  Template,
-  TemplateConnector,
-  TemplatePlaceholder,
   Getter,
 } from "@devexpress/dx-react-core";
 import { DataTypeProvider, SummaryState } from "@devexpress/dx-react-grid";
@@ -45,76 +41,8 @@ import { ADD_INVESTMENT, GET_INVESTOR_DETAIL, GET_ALL_COMPANIES, UPDATE_INVESTME
 import { EmployeeFormatter } from "./EmployeeFormatter";
 import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
-
-const Popup = ({
-  row,
-  onChange,
-  onApplyChanges,
-  onCancelChanges,
-  open,
-  refresh,
-  allCompanies,
-}) => {
-  console.log(row, allCompanies);
-  return (
-    <Dialog
-      open={open}
-      onClose={onCancelChanges}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle id="form-dialog-title">Add Investment</DialogTitle>
-      <DialogContent>
-        <p>Please enter the details of the investment.</p>
-
-        <FormGroup>
-          <FormControl>
-            <InputLabel>Select Company</InputLabel>
-            <Select
-              value={row.companyId || ""}
-              onChange={(event) => onChange("companyId", event.target.value)}
-            >
-              {(allCompanies ? allCompanies.company : []).map((company) => (
-                <MenuItem value={company.id}>{company.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth>
-            <InputLabel>Amount</InputLabel>
-            <Input
-              id="standard-adornment-amount"
-              type="number"
-              value={row.amount || ""}
-              onChange={(event) => onChange("amount", event.target.value)}
-              startAdornment={
-                <InputAdornment position="start">$</InputAdornment>
-              }
-            />
-          </FormControl>
-        </FormGroup>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            onCancelChanges();
-          }}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => {
-            onApplyChanges();
-          }}
-          color="primary"
-          disableElevation
-        >
-          Add Company
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+import { PopupEditing } from "./PopupEditing";
+import { Popup } from "./Popup";
 
 const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
   const handleChange = (event) => {
@@ -180,90 +108,6 @@ const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
     </Dialog>
   );
 };
-
-const PopupEditing = React.memo(({ popupComponent: Popup, allCompanies }) => {
-  return (
-    <Plugin>
-      <Template name="popupEditing">
-        <TemplateConnector>
-          {(
-            {
-              addedRows,
-              rows,
-              getRowId,
-              editingRowIds,
-              createRowChange,
-              rowChanges,
-            },
-            {
-              changeRow,
-              commitChangedRows,
-              stopEditRows,
-              cancelAddedRows,
-              commitAddedRows,
-              changeAddedRow,
-            }
-          ) => {
-            const isAddMode = addedRows.length > 0;
-            const isEditMode = editingRowIds.length > 0;
-
-            const editRowId = editingRowIds[0] || 0;
-
-            const open = isEditMode || isAddMode;
-            const targetRow = rows.filter(
-              (row) => getRowId(row) === editRowId
-            )[0];
-            const changedRow = isAddMode
-              ? addedRows[0]
-              : { ...targetRow, ...rowChanges[editRowId] };
-
-            const processValueChange = (fieldName, newValue) => {
-              const changeArgs = {
-                rowId: editRowId,
-                change: createRowChange(changedRow, newValue, fieldName),
-              };
-
-              if (isAddMode) {
-                changeAddedRow(changeArgs);
-              } else {
-                changeRow(changeArgs);
-              }
-            };
-            const applyChanges = () => {
-              if (isEditMode) {
-                commitChangedRows({ rowIds: editingRowIds });
-              } else {
-                commitAddedRows({ rowIds: [0] });
-              }
-              stopEditRows({ rowIds: editingRowIds });
-            };
-            const cancelChanges = () => {
-              if (isAddMode) {
-                cancelAddedRows({ rowIds: [0] });
-              }
-              stopEditRows({ rowIds: editingRowIds });
-            };
-
-            return (
-              <Popup
-                open={open}
-                row={changedRow}
-                onChange={processValueChange}
-                onApplyChanges={applyChanges}
-                onCancelChanges={cancelChanges}
-                allCompanies={allCompanies}
-              />
-            );
-          }}
-        </TemplateConnector>
-      </Template>
-      <Template name="root">
-        <TemplatePlaceholder />
-        <TemplatePlaceholder name="popupEditing" />
-      </Template>
-    </Plugin>
-  );
-});
 
 export const State = {
   addButton: "+ Add Investments",
@@ -479,6 +323,10 @@ export const InvestorDetails = () => {
   ]);
 
   const [employeeColumns] = useState([State.columns[1].name]);
+  const detail = {
+    type: 'Edit',
+    selectMenu: 'Company'
+  }
 
   return (
     <Paper style={{ position: "relative" }}>
@@ -524,6 +372,7 @@ export const InvestorDetails = () => {
           updateInvestment={updateInvestment}
           open={true}
           allCompanies={allCompanies}
+          detail={detail}
         />
         <Getter
           name="tableColumns"
