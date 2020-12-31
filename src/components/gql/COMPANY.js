@@ -70,3 +70,11 @@ export const UPDATE_COMPANY = gql`
     }
   }
 `;
+
+export const DELETE_COMPANY = gql`
+  mutation DeleteCompany($id: Int) {
+    delete_company(where: { id: { _eq: $id } }) {
+      affected_rows
+    }
+  }
+`;

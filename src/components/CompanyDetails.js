@@ -20,8 +20,8 @@ import { useHistory, useParams } from "react-router-dom";
 import { EditInvestor } from "./EditInvestor";
 import {
   ADD_INVESTMENT,
+  DELETE_COMPANY,
   DELETE_INVESTMENT,
-  DELETE_INVESTOR,
   GET_ALL_INVESTORS,
   GET_COMPANY_DETAIL,
   UPDATE_COMPANY,
@@ -130,7 +130,7 @@ export const CompanyDetails = () => {
     ],
   });
 
-  const [deleteInvestorMutation] = useMutation(DELETE_INVESTOR);
+  const [deleteCompanyMutation] = useMutation(DELETE_COMPANY);
 
   const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
     refetchQueries: [
@@ -171,7 +171,7 @@ export const CompanyDetails = () => {
   });
 
   const removeInvestor = async () => {
-    await deleteInvestorMutation({ variables: { id: +COMPANY_ID } });
+    await deleteCompanyMutation({ variables: { id: +COMPANY_ID } });
     history.push("/");
   };
 

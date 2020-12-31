@@ -101,7 +101,7 @@ export const UPDATE_INVESTOR = gql`
 
 export const DELETE_INVESTOR = gql`
   mutation DeleteInvestor($id: Int) {
-    delete_company(where: { id: { _eq: $id } }) {
+    delete_investor(where: { id: { _eq: $id } }) {
       affected_rows
     }
   }
