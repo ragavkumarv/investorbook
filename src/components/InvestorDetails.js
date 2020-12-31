@@ -37,6 +37,8 @@ import {
 } from "./helper";
 import { Loading } from "./loader/Loading";
 
+import { DeleteConfirmation } from './DeleteConfirmation'
+
 export const State = {
   addButton: "+ Add Investments",
   heading: "Investments",
@@ -184,6 +186,7 @@ export const InvestorDetails = () => {
   const [total, setTotal] = useState(0);
 
   const [openEditInvestor, setOpenEditInvestor] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
   const [state, setState] = useState({
     name: "",
@@ -191,9 +194,13 @@ export const InvestorDetails = () => {
     photoLarge: "",
   });
 
-  const removeInvestor = async () => {
-    await deleteInvestorMutation({ variables: { id: +INVESTOR_ID } });
-    history.push("/");
+  const deleteConfirmInvestor =  async () => {
+     await deleteInvestorMutation({ variables: { id: +INVESTOR_ID } })
+     history.push("/")
+  }
+
+  const removeInvestor = () => {
+    setOpenDelete(true);
   };
 
   const saveInvestor = () => {
@@ -293,6 +300,7 @@ export const InvestorDetails = () => {
       >
         <ArrowBackIosIcon fontSize="large" />
       </IconButton>
+      <DeleteConfirmation setOpen={setOpenDelete} open={openDelete} deleteConfirm={deleteConfirmInvestor}/>
       <Paper style={{ position: "relative" }}>
         <EditInvestor
           open={openEditInvestor}

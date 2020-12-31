@@ -36,6 +36,7 @@ import {
   PopupEditing,
 } from "./helper";
 import { Loading } from "./loader/Loading";
+import { DeleteConfirmation } from './DeleteConfirmation'
 
 export const State = {
   addButton: "+ Add Investors",
@@ -170,9 +171,14 @@ export const CompanyDetails = () => {
     name: "",
   });
 
-  const removeInvestor = async () => {
+  const [openDelete, setOpenDelete] = useState(false);
+
+  const deleteConfirmInvestor =  async () => {
     await deleteCompanyMutation({ variables: { id: +COMPANY_ID } });
     history.push("/");
+ }
+  const removeCompany = () => {
+    setOpenDelete(true);
   };
 
   const saveInvestor = () => {
@@ -262,6 +268,7 @@ export const CompanyDetails = () => {
       >
         <ArrowBackIosIcon fontSize="large" />
       </IconButton>
+      <DeleteConfirmation setOpen={setOpenDelete} open={openDelete} deleteConfirm={deleteConfirmInvestor}/>
       <Paper style={{ position: "relative" }}>
         <EditInvestor
           open={openEditInvestor}
@@ -274,7 +281,7 @@ export const CompanyDetails = () => {
         <InvestorSummary
           investor={data ? data.company[0] : { name: "" }}
           setOpen={setOpenEditInvestor}
-          removeInvestor={removeInvestor}
+          removeInvestor={removeCompany}
         />
 
         <Grid rows={rows} columns={columns} getRowId={getRowId}>
