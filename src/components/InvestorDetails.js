@@ -1,7 +1,5 @@
 import { useQuery, useMutation } from "@apollo/client";
-import {
-  Getter,
-} from "@devexpress/dx-react-core";
+import { Getter } from "@devexpress/dx-react-core";
 import { DataTypeProvider, SummaryState } from "@devexpress/dx-react-grid";
 import {
   Grid,
@@ -35,15 +33,24 @@ import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from "react-router-dom";
 import { Command } from "./helper/Command";
-import { ADD_INVESTMENT, GET_INVESTOR_DETAIL, GET_ALL_COMPANIES, UPDATE_INVESTMENT, UPDATE_INVESTOR, DELETE_INVESTOR, DELETE_INVESTMENT } from "./gql";
+import {
+  ADD_INVESTMENT,
+  GET_INVESTOR_DETAIL,
+  GET_ALL_COMPANIES,
+  UPDATE_INVESTMENT,
+  UPDATE_INVESTOR,
+  DELETE_INVESTOR,
+  DELETE_INVESTMENT,
+} from "./gql";
 import { EmployeeFormatter } from "./EmployeeFormatter";
 import { CurrencyTypeProvider } from "./helper/CurrencyFormatter";
 import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 import { PopupEditing } from "./helper/PopupEditing";
 import { Popup } from "./helper/Popup";
 import { EditInvestor } from "./EditInvestor";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
 export const State = {
   addButton: "+ Add Investments",
@@ -56,10 +63,13 @@ export const State = {
 
 const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "80px 6fr 2fr" }}>
+    <div style={{ display: "grid", padding: "20px", gridTemplateColumns: "80px 6fr 6fr" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
         <img
-          src={investor.photo_large ||"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQACGFpr0iqURE_6EHYMm-AGXfhXC1Nzf4ucA&usqp=CAU" }
+          src={
+            investor.photo_large ||
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQACGFpr0iqURE_6EHYMm-AGXfhXC1Nzf4ucA&usqp=CAU"
+          }
           style={{
             height: "50px",
             width: "50px",
@@ -79,11 +89,19 @@ const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
           })}
         </p>
       </div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Button onClick={() => setOpen(true)} startIcon={<EditIcon />}>
+      <div
+        style={{
+          display: "flex",
+          placeContent: "center flex-end",
+          alignItems: "center",
+        }}
+      >
+        <Button style={{ marginRight: "10px" }} onClick={() => setOpen(true)} startIcon={<EditIcon />}>
           EDIT NAME
         </Button>
-        <Button onClick={() => removeInvestor() } startIcon={<DeleteIcon />}>REMOVE INVESTOR</Button>
+        <Button onClick={() => removeInvestor()} startIcon={<DeleteIcon />}>
+          REMOVE INVESTOR
+        </Button>
       </div>
     </div>
   );
@@ -179,9 +197,9 @@ export const InvestorDetails = () => {
   });
 
   const removeInvestor = () => {
-    deleteInvestorMutation({variables:{id: INVESTOR_ID}});
-    history.push('/');
-  }
+    deleteInvestorMutation({ variables: { id: INVESTOR_ID } });
+    history.push("/");
+  };
 
   const saveInvestor = () => {
     // console.log(state);
@@ -260,72 +278,90 @@ export const InvestorDetails = () => {
 
   const [employeeColumns] = useState([State.columns[1].name]);
   const detail = {
-    type: 'Edit',
-    selectMenu: 'Company'
-  }
+    type: "Edit",
+    selectMenu: "Company",
+  };
 
   return (
-    <Paper style={{ position: "relative" }}>
-      <EditInvestor
-        open={openEditInvestor}
-        setOpen={setOpenEditInvestor}
-        state={state}
-        setState={setState}
-        saveInvestor={saveInvestor}
-        type="Investor"
-      />
-      <InvestorSummary
-        investor={data ? data.investor[0] : { name: "", photo_large: "" }}
-        total={total}
-        setOpen={setOpenEditInvestor}
-        removeInvestor={removeInvestor}
-      />
-
-      <Grid rows={rows} columns={columns} getRowId={getRowId}>
-        <DataTypeProvider
-          for={employeeColumns}
-          formatterComponent={EmployeeFormatter}
+    <div
+      style={{
+        display: "flex",
+        placeContent: "flex-start",
+        alignItems: "flex-start",
+        gap: "10px",
+      }}
+    >
+      <IconButton
+        aria-label="back"
+        style={{
+          marginTop: "24px",
+        }}
+        onClick={() => history.goBack()}
+      >
+        <ArrowBackIosIcon fontSize="large" />
+      </IconButton>
+      <Paper style={{ position: "relative" }}>
+        <EditInvestor
+          open={openEditInvestor}
+          setOpen={setOpenEditInvestor}
+          state={state}
+          setState={setState}
+          saveInvestor={saveInvestor}
+          type="Investor"
+        />
+        <InvestorSummary
+          investor={data ? data.investor[0] : { name: "", photo_large: "" }}
+          total={total}
+          setOpen={setOpenEditInvestor}
+          removeInvestor={removeInvestor}
         />
 
-        <EditingState onCommitChanges={commitChanges} />
-        <Table columnExtensions={tableColumnExtensions} />
+        <Grid rows={rows} columns={columns} getRowId={getRowId}>
+          <DataTypeProvider
+            for={employeeColumns}
+            formatterComponent={EmployeeFormatter}
+          />
 
-        <TableHeaderRow cellComponent={cellComponent} />
+          <EditingState onCommitChanges={commitChanges} />
+          <Table columnExtensions={tableColumnExtensions} />
 
-        <CurrencyTypeProvider for={currencyColumns} />
+          <TableHeaderRow cellComponent={cellComponent} />
 
-        <Toolbar />
-        <CustomToolbarMarkup state={State} />
+          <CurrencyTypeProvider for={currencyColumns} />
 
-        <TableEditColumn
-          showAddCommand
-          showEditCommand
-          showDeleteCommand
-          commandComponent={Command}
-        />
-        <PopupEditing
-          popupComponent={Popup}
-          refresh={refetch}
-          updateInvestment={updateInvestment}
-          open={true}
-          allCompanies={allCompanies}
-          detail={detail}
-        />
-        {/* Push action to Last column */}
-        <Getter
-          name="tableColumns"
-          computed={({ tableColumns }) => {
-            const result = [
-              ...tableColumns.filter(
-                (c) => c.type !== TableEditColumn.COLUMN_TYPE
-              ),
-              { key: "editCommand", type: TableEditColumn.COLUMN_TYPE },
-            ];
-            return result;
-          }}
-        />
-      </Grid>
-      {loading && <Loading />}
-    </Paper>
+          <Toolbar />
+          <CustomToolbarMarkup state={State} />
+
+          <TableEditColumn
+            showAddCommand
+            showEditCommand
+            showDeleteCommand
+            commandComponent={Command}
+          />
+          <PopupEditing
+            popupComponent={Popup}
+            refresh={refetch}
+            updateInvestment={updateInvestment}
+            open={true}
+            allCompanies={allCompanies}
+            detail={detail}
+          />
+          {/* Push action to Last column */}
+          <Getter
+            name="tableColumns"
+            computed={({ tableColumns }) => {
+              const result = [
+                ...tableColumns.filter(
+                  (c) => c.type !== TableEditColumn.COLUMN_TYPE
+                ),
+                { key: "editCommand", type: TableEditColumn.COLUMN_TYPE },
+              ];
+              return result;
+            }}
+          />
+        </Grid>
+        {loading && <Loading />}
+      </Paper>
+    </div>
   );
 };

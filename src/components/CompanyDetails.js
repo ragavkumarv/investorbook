@@ -44,7 +44,8 @@ import { CustomToolbarMarkup } from "./helper/CustomToolbarMarkup";
 import { PopupEditing } from "./helper/PopupEditing";
 import { Popup } from "./helper/Popup";
 import { EditInvestor } from "./EditInvestor";
-
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import IconButton from "@material-ui/core/IconButton";
 export const State = {
   addButton: "+ Add Investors",
   heading: "Investors",
@@ -258,67 +259,85 @@ export const CompanyDetails = () => {
   };
 
   return (
-    <Paper style={{ position: "relative" }}>
-      <EditInvestor
-        open={openEditInvestor}
-        setOpen={setOpenEditInvestor}
-        state={state}
-        setState={setState}
-        saveInvestor={saveInvestor}
-        type="Company"
-      />
-      <InvestorSummary
-        investor={data ? data.company[0] : { name: "" }}
-        total={total}
-        setOpen={setOpenEditInvestor}
-        removeInvestor={removeInvestor}
-      />
-
-      <Grid rows={rows} columns={columns} getRowId={getRowId}>
-        <DataTypeProvider
-          for={employeeColumns}
-          formatterComponent={EmployeeFormatter}
+    <div
+      style={{
+        display: "flex",
+        placeContent: "flex-start",
+        alignItems: "flex-start",
+        gap: "10px",
+      }}
+    >
+      <IconButton
+        aria-label="back"
+        style={{
+          marginTop: "24px",
+        }}
+        onClick={()=> history.goBack()}
+      >
+        <ArrowBackIosIcon fontSize="large" />
+      </IconButton>
+      <Paper style={{ position: "relative" }}>
+        <EditInvestor
+          open={openEditInvestor}
+          setOpen={setOpenEditInvestor}
+          state={state}
+          setState={setState}
+          saveInvestor={saveInvestor}
+          type="Company"
+        />
+        <InvestorSummary
+          investor={data ? data.company[0] : { name: "" }}
+          total={total}
+          setOpen={setOpenEditInvestor}
+          removeInvestor={removeInvestor}
         />
 
-        <EditingState onCommitChanges={commitChanges} />
-        <Table columnExtensions={tableColumnExtensions} />
+        <Grid rows={rows} columns={columns} getRowId={getRowId}>
+          <DataTypeProvider
+            for={employeeColumns}
+            formatterComponent={EmployeeFormatter}
+          />
 
-        <TableHeaderRow cellComponent={cellComponent} />
+          <EditingState onCommitChanges={commitChanges} />
+          <Table columnExtensions={tableColumnExtensions} />
 
-        <CurrencyTypeProvider for={currencyColumns} />
+          <TableHeaderRow cellComponent={cellComponent} />
 
-        <Toolbar />
-        <CustomToolbarMarkup state={State} />
+          <CurrencyTypeProvider for={currencyColumns} />
 
-        <TableEditColumn
-          showAddCommand
-          showEditCommand
-          showDeleteCommand
-          commandComponent={Command}
-        />
-        <PopupEditing
-          popupComponent={Popup}
-          refresh={refetch}
-          updateInvestment={updateInvestment}
-          open={true}
-          allInvestors={allInvestors}
-          detail={detail}
-        />
-        {/* Push action to Last column */}
-        <Getter
-          name="tableColumns"
-          computed={({ tableColumns }) => {
-            const result = [
-              ...tableColumns.filter(
-                (c) => c.type !== TableEditColumn.COLUMN_TYPE
-              ),
-              { key: "editCommand", type: TableEditColumn.COLUMN_TYPE },
-            ];
-            return result;
-          }}
-        />
-      </Grid>
-      {loading && <Loading />}
-    </Paper>
+          <Toolbar />
+          <CustomToolbarMarkup state={State} />
+
+          <TableEditColumn
+            showAddCommand
+            showEditCommand
+            showDeleteCommand
+            commandComponent={Command}
+          />
+          <PopupEditing
+            popupComponent={Popup}
+            refresh={refetch}
+            updateInvestment={updateInvestment}
+            open={true}
+            allInvestors={allInvestors}
+            detail={detail}
+          />
+          {/* Push action to Last column */}
+          <Getter
+            name="tableColumns"
+            computed={({ tableColumns }) => {
+              const result = [
+                ...tableColumns.filter(
+                  (c) => c.type !== TableEditColumn.COLUMN_TYPE
+                ),
+                { key: "editCommand", type: TableEditColumn.COLUMN_TYPE },
+              ];
+              return result;
+            }}
+          />
+        </Grid>
+        {loading && <Loading />}
+      </Paper>
+    </div>
   );
 };
