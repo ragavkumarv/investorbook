@@ -39,7 +39,7 @@ import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from "react-router-dom";
 
 // const INVESTOR_ID = 100;
 
@@ -63,15 +63,15 @@ const Popup = ({
       <DialogContent>
         <p>Please enter the details of the investment.</p>
 
-        <FormGroup>
+        <FormGroup style={{ gap: "10px" }}>
           <FormControl>
-            <InputLabel>Select Company</InputLabel>
+            <InputLabel>Select Investor</InputLabel>
             <Select
-              value={row.companyId || ""}
-              onChange={(event) => onChange("companyId", event.target.value)}
+              value={row.investorId || ""}
+              onChange={(event) => onChange("investorId", event.target.value)}
             >
-              {(allCompanies ? allCompanies.company : []).map((company) => (
-                <MenuItem value={company.id}>{company.name}</MenuItem>
+              {(allCompanies ? allCompanies.investor : []).map((investor) => (
+                <MenuItem value={investor.id}>{investor.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -108,7 +108,7 @@ const Popup = ({
           color="primary"
           disableElevation
         >
-          Add Company
+          Add Investor
         </Button>
       </DialogActions>
     </Dialog>
@@ -120,7 +120,7 @@ const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
     setState({ ...state, [event.target.name]: event.target.value });
   };
 
-  const { name, photoThumbnail, photoLarge } = state;
+  const { name } = state;
 
   return (
     <Dialog
@@ -128,9 +128,9 @@ const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
       // onClose={onCancelChanges}
       aria-labelledby="form-dialog-title"
     >
-      <DialogTitle id="form-dialog-title">Edit Investor</DialogTitle>
+      <DialogTitle id="form-dialog-title">Edit Company</DialogTitle>
       <DialogContent>
-        <p>Please enter the details of the investor.</p>
+        <p>Please enter the details of the company.</p>
         <FormGroup style={{ gap: "20px" }}>
           <TextField
             style={{ width: "500px" }}
@@ -138,20 +138,6 @@ const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
             value={name}
             onChange={handleChange}
             label="Name"
-          />
-          <TextField
-            style={{ width: "500px" }}
-            name="photoThumbnail"
-            value={photoThumbnail}
-            onChange={handleChange}
-            label="Photo thumbnail"
-          />
-          <TextField
-            style={{ width: "500px" }}
-            name="photoLarge"
-            value={photoLarge}
-            onChange={handleChange}
-            label="Photo large"
           />
         </FormGroup>
       </DialogContent>
@@ -173,14 +159,14 @@ const EditInvestor = ({ open, setOpen, state, setState, saveInvestor }) => {
           color="primary"
           disableElevation
         >
-          Edit Investor
+          Edit Company
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-const PopupEditing = React.memo(({ popupComponent: Popup, allCompanies }) => {
+const PopupEditing = React.memo(({ popupComponent: Popup, allInvestors }) => {
   return (
     <Plugin>
       <Template name="popupEditing">
@@ -250,7 +236,7 @@ const PopupEditing = React.memo(({ popupComponent: Popup, allCompanies }) => {
                 onChange={processValueChange}
                 onApplyChanges={applyChanges}
                 onCancelChanges={cancelChanges}
-                allCompanies={allCompanies}
+                allCompanies={allInvestors}
               />
             );
           }}
@@ -268,7 +254,7 @@ const State = {
   addButton: "+ Add Investors",
   heading: "Investors",
   edit: "EDIT NAME",
-  remove: "REMOVE COMPANY", 
+  remove: "REMOVE COMPANY",
   columns: [
     { name: "name", title: "Name" },
     { name: "amount", title: "Amount" },
@@ -319,34 +305,32 @@ const CustomToolbarMarkup = () => (
 
 const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "80px 6fr 2fr" }}>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <img
-          src={investor.photo_large}
-          style={{
-            height: "50px",
-            width: "50px",
-            borderRadius: "50%",
-            margin: "0 auto",
-          }}
-          alt="Avatar"
-        />
-      </div>
+    <div
+      style={{
+        display: "grid",
+        padding: "20px",
+        gridTemplateColumns: "1fr 2fr",
+      }}
+    >
       <div>
         <p style={{ fontSize: "24px", lineHeight: "22px" }}>{investor.name}</p>
-        <p style={{ fontSize: "15px", lineHeight: "14px" }}>
-          Total Amount Invested:{" "}
-          {total.toLocaleString("en-US", {
-            style: "currency",
-            currency: "USD",
-          })}
-        </p>
       </div>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Button onClick={() => setOpen(true)} startIcon={<EditIcon />}>
-          {State.edit}
-        </Button>
-        <Button onClick={() => removeInvestor() } startIcon={<DeleteIcon />}>{State.remove}</Button>
+      <div
+        style={{
+          display: "flex",
+          placeContent: "center flex-end",
+          alignItems: "center",
+         
+        }}
+      >
+        <div >
+          <Button style={{marginRight:'10px'}} onClick={() => setOpen(true)} startIcon={<EditIcon />}>
+            {State.edit}
+          </Button>
+          <Button onClick={() => removeInvestor()} startIcon={<DeleteIcon />}>
+            {State.remove}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -372,17 +356,15 @@ const ADD_INVESTMENT = gql`
   }
 `;
 
-const GET_INVESTOR_DETAIL = gql`
-  query GetInvestorDetail($id: Int) {
-    investor(where: { id: { _eq: $id } }) {
+const GET_COMPANY_DETAIL = gql`
+  query GetCompanyDetail($id: Int) {
+    company(where: { id: { _eq: $id } }) {
       id
       name
-      photo_large
-      photo_thumbnail
       investments(order_by: { created_at: desc }) {
         id
         amount
-        company {
+        investor {
           id
           name
         }
@@ -391,9 +373,9 @@ const GET_INVESTOR_DETAIL = gql`
   }
 `;
 
-const GET_ALL_COMPANIES = gql`
-  query GetAllCompanies {
-    company(distinct_on: name) {
+const GET_ALL_INVESTORS = gql`
+  query GetAllInvestors {
+    investor(distinct_on: name, limit: 10) {
       id
       name
     }
@@ -417,19 +399,15 @@ const UPDATE_INVESTMENT = gql`
   }
 `;
 
-const UPDATE_INVESTOR = gql`
-  mutation UpdateInvestor(
+const UPDATE_COMPANY = gql`
+  mutation UpdateCompany(
     $id: Int
     $name: String
-    $photo_large: String
-    $photo_thumbnail: String
   ) {
-    update_investor(
+    update_company(
       where: { id: { _eq: $id } }
       _set: {
         name: $name
-        photo_large: $photo_large
-        photo_thumbnail: $photo_thumbnail
       }
     ) {
       affected_rows
@@ -447,7 +425,7 @@ const DELETE_INVESTMENT = gql`
 
 const DELETE_INVESTOR = gql`
   mutation DeleteInvestor($id: Int) {
-    delete_investor(where: { id: { _eq: $id } }) {
+    delete_company(where: { id: { _eq: $id } }) {
       affected_rows
     }
   }
@@ -461,7 +439,7 @@ export const CompanyDetails = () => {
   const [addInvestment] = useMutation(ADD_INVESTMENT, {
     refetchQueries: [
       {
-        query: GET_INVESTOR_DETAIL,
+        query: GET_COMPANY_DETAIL,
         variables: {
           id: COMPANY_ID,
         },
@@ -469,12 +447,18 @@ export const CompanyDetails = () => {
     ],
   });
 
-  const { data: allCompanies } = useQuery(GET_ALL_COMPANIES);
+  const { data: allInvestors } = useQuery(GET_ALL_INVESTORS);
+
+  const { loading, error, data, refetch } = useQuery(GET_COMPANY_DETAIL, {
+    variables: {
+      id: COMPANY_ID,
+    },
+  });
 
   const [updateInvestment] = useMutation(UPDATE_INVESTMENT, {
     refetchQueries: [
       {
-        query: GET_INVESTOR_DETAIL,
+        query: GET_COMPANY_DETAIL,
         variables: {
           id: COMPANY_ID,
         },
@@ -482,10 +466,10 @@ export const CompanyDetails = () => {
     ],
   });
 
-  const [updateInvestor] = useMutation(UPDATE_INVESTOR, {
+  const [updateCompany] = useMutation(UPDATE_COMPANY, {
     refetchQueries: [
       {
-        query: GET_INVESTOR_DETAIL,
+        query: GET_COMPANY_DETAIL,
         variables: {
           id: COMPANY_ID,
         },
@@ -498,7 +482,7 @@ export const CompanyDetails = () => {
   const [deleteInvestmentMutation] = useMutation(DELETE_INVESTMENT, {
     refetchQueries: [
       {
-        query: GET_INVESTOR_DETAIL,
+        query: GET_COMPANY_DETAIL,
         variables: {
           id: COMPANY_ID,
         },
@@ -525,12 +509,6 @@ export const CompanyDetails = () => {
 
   const [currencyColumns] = useState([State.columns[1].name]);
 
-  const { loading, error, data, refetch } = useQuery(GET_INVESTOR_DETAIL, {
-    variables: {
-      id: COMPANY_ID,
-    },
-  });
-
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
 
@@ -538,23 +516,19 @@ export const CompanyDetails = () => {
 
   const [state, setState] = useState({
     name: "",
-    photoThumbnail: "",
-    photoLarge: "",
   });
 
   const removeInvestor = () => {
-    deleteInvestorMutation({variables:{id: COMPANY_ID}});
-    history.push('/');
-  }
+    deleteInvestorMutation({ variables: { id: COMPANY_ID } });
+    history.push("/");
+  };
 
   const saveInvestor = () => {
     // console.log(state);
-    updateInvestor({
+    updateCompany({
       variables: {
         id: COMPANY_ID,
         name: state.name,
-        photo_large: state.photoLarge,
-        photo_thumbnail: state.photoThumbnail,
       },
     });
   };
@@ -566,8 +540,8 @@ export const CompanyDetails = () => {
       addInvestment({
         variables: {
           amount: +newRow.amount,
-          investor_id: COMPANY_ID,
-          company_id: newRow.companyId,
+          investor_id: newRow.investorId,
+          company_id: COMPANY_ID,
         },
       });
     }
@@ -578,7 +552,7 @@ export const CompanyDetails = () => {
         variables: {
           id: editRow.id,
           amount: editRow.amount,
-          company_id: editRow.companyId,
+          company_id: COMPANY_ID,
         },
       });
     }
@@ -590,28 +564,21 @@ export const CompanyDetails = () => {
   const loadData = () => {
     if (rows && !data) return;
 
+    console.log(data);
     setRows(
-      data.investor[0].investments.map((detail) => ({
-        companyId: detail.company.id,
+      data.company[0].investments.map((detail) => ({
+        investorId: detail.investor.id,
         id: detail.id,
-        name: detail.company.name,
+        name: detail.investor.name,
         amount: detail.amount,
       }))
     );
 
-    setTotal(
-      data.investor[0].investments
-        .map((detail) => detail.amount)
-        .reduce((i, sum) => i + sum, 0)
-    );
-
-    const { id, name, photo_large, photo_thumbnail } = data.investor[0];
+    const { id, name} = data.company[0];
 
     setState({
       id,
       name,
-      photoLarge: photo_large,
-      photoThumbnail: photo_thumbnail,
     });
   };
 
@@ -634,7 +601,7 @@ export const CompanyDetails = () => {
         saveInvestor={saveInvestor}
       />
       <InvestorSummary
-        investor={data ? data.investor[0] : { name: "", photo_large: "" }}
+        investor={data ? data.company[0] : { name: "" }}
         total={total}
         setOpen={setOpenEditInvestor}
         removeInvestor={removeInvestor}
@@ -667,7 +634,7 @@ export const CompanyDetails = () => {
           refresh={refetch}
           updateInvestment={updateInvestment}
           open={true}
-          allCompanies={allCompanies}
+          allInvestors={allInvestors}
         />
         <Getter
           name="tableColumns"

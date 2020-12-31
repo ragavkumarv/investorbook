@@ -1,14 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
+import { Route, Switch, useHistory } from "react-router-dom";
 import "./App.css";
-import { ListInvestors } from "./components/ListInvestors";
-import { ListCompanies } from "./components/ListCompanies";
+import { CompanyDetails } from "./components/CompanyDetails";
 import { InvestorDetails } from "./components/InvestorDetails";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
 import Home from "./Home";
-import { Switch, Route, useHistory } from "react-router-dom";
 
 
 function App() {
@@ -20,6 +15,9 @@ function App() {
       <Switch>
         <Route path="/investor/:id">
           <InvestorDetails />
+        </Route>
+        <Route path="/company/:id">
+          <CompanyDetails />
         </Route>
         <Route path="/investors">
           <Home />
