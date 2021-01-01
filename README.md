@@ -19,6 +19,7 @@ Investors, Companies, and Investments.
 8. Pagination on Companies, Investors
 9. Logo Navigation
 10. Formatting on amount of investment
+11. Responsive Design
 
 ### Improvement Area
 1. Autocomplete could be added to improve the perfomance when choosing a investor from the list all available investor & company
