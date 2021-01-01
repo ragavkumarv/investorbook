@@ -53,12 +53,12 @@ export const State = {
 
 const InvestorSummary = ({ investor, setOpen, removeInvestor }) => {
   return (
-    <div className="investment-summary">
+    <div className="company-summary">
       <div>
         <p style={{ fontSize: "24px", lineHeight: "22px" }}>{investor.name}</p>
       </div>
       <div
-      className="investment-summary__icons"
+      className="company-summary__icons"
       >
           <Button
             style={{ marginRight: "10px" }}
