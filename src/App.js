@@ -1,55 +1,35 @@
 import React from "react";
-import { Route, Switch, useHistory, useLocation } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import "./App.css";
 import { CompanyDetails } from "./components/CompanyDetail/CompanyDetails";
 import { InvestorDetails } from "./components/InvestorDetails/InvestorDetails";
 import Home from "./Home";
-import IconButton from "@material-ui/core/IconButton";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import { useWindowSize, BackButton } from "./components/helper";
 
 function App() {
   const history = useHistory();
-  const location = useLocation();
-
-  const homePaths = ["/", "/investors", "/companies"];
+  const size = useWindowSize();
+  const small = size.width < 550;
 
   return (
     <div style={{ position: "relative" }} className="App">
-      <div
-        style={{
-          display: "flex",
-          marginBottom: "10px",
-          alignItems: "center",
-          gap: "10px",
-        }}
-      >
-        {homePaths.find((path) => location.pathname === path) ? (
-          ""
-        ) : (
-          <IconButton
-            aria-label="back"
-            style={{
-              marginTop: "24px",
-            }}
-            onClick={() => history.goBack()}
-          >
-            <ArrowBackIosIcon fontSize="large" />
-          </IconButton>
-        )}
-
-        <p
-          className="logo"
-          style={{ cursor: "pointer", marginTop: "40px" }}
-          onClick={(e) => history.push("/")}
-        ></p>
-        
-      </div>
+      <BackButton
+       marginTop="26px"
+        display={small}
+        content={
+          <p
+            className="logo"
+            style={{ cursor: "pointer", marginTop: "40px" }}
+            onClick={(e) => history.push("/")}
+          ></p>
+        }
+      />
       <Switch>
         <Route path="/investor/:id">
-          <InvestorDetails />
+          <BackButton marginTop="46px" display={!small} content={<InvestorDetails />} />
         </Route>
         <Route path="/company/:id">
-          <CompanyDetails />
+        <BackButton marginTop="34px" display={!small} content={ <CompanyDetails />} />
         </Route>
         <Route path="/investors">
           <Home />

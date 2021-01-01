@@ -34,7 +34,7 @@ const commandComponents = {
   delete: DeleteButton,
 };
 
-function useWindowSize() {
+export function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
     width: undefined,
     height: undefined,
