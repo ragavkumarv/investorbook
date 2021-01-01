@@ -19,7 +19,7 @@ function App() {
         content={
           <p
             className="logo"
-            style={{ cursor: "pointer", marginTop: "40px" }}
+            style={{ cursor: "pointer", marginTop: "40px", marginLeft: '10px' }}
             onClick={(e) => history.push("/")}
           ></p>
         }
