@@ -282,7 +282,7 @@ export const CompanyDetails = () => {
             showAddCommand
             showEditCommand
             showDeleteCommand
-            commandComponent={Command}
+            commandComponent={Command(State)}
           />
           <PopupEditing
             popupComponent={Popup}

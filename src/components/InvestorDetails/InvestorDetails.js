@@ -37,7 +37,7 @@ import {
 import { Loading } from "../loader/Loading";
 import "./InvestorDetails.css";
 
-export const State = {
+const State = {
   addButton: "+ Add Investments",
   heading: "Investments",
   columns: [
@@ -310,7 +310,7 @@ export const InvestorDetails = () => {
             showAddCommand
             showEditCommand
             showDeleteCommand
-            commandComponent={Command}
+            commandComponent={Command(State)}
           />
           <PopupEditing
             popupComponent={Popup}

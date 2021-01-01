@@ -2,13 +2,12 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import { State } from "../CompanyDetail/CompanyDetails";
 import React, { useEffect, useState } from "react";
 
 // Action button icons in the grid
-export const Command = ({ id, onExecute, disabled }) => {
+export const Command = (state) => ({ id, onExecute, disabled }) => {
   const ButtonComponent = commandComponents[id];
-  return <ButtonComponent onExecute={onExecute} disabled={disabled} />;
+  return <ButtonComponent onExecute={onExecute} disabled={disabled} state={state}  />;
 };
 const EditButton = ({ onExecute, disabled }) => (
   <IconButton onClick={onExecute} disabled={disabled} aria-label="delete">
@@ -20,12 +19,12 @@ const DeleteButton = ({ onExecute, disabled }) => (
     <DeleteIcon fontSize="small" />
   </IconButton>
 );
-const AddButton = ({ onExecute, disabled }) => {
+const AddButton = ({ onExecute, disabled, state }) => {
   const size = useWindowSize();
 
   return (
     <Button onClick={onExecute} disabled={disabled} color="primary">
-      {size.width < 550 ? "+ Add" : State.addButton}
+      {size.width < 550 ? "+ Add" : state.addButton}
     </Button>
   );
 };
