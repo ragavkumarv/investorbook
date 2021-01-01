@@ -1,0 +1,31 @@
+
+.toolbar-header {
+  display: grid;
+  grid-template-columns: 5fr 0px 200px;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.toolbar-header > div {
+  height: min-content;
+  align-self: center;
+} 
+
+.toolbar-header__action {
+  display: flex;
+  gap: 14px;
+  height: min-content;
+  place-content: center flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 540px) {
+  .toolbar-header {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar-header__action {
+    place-content: center space-between;
+  }
+}

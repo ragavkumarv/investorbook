@@ -1,0 +1,33 @@
+.investment-summary {
+  display: grid;
+  padding: 20px;
+  gap: 10px;
+  grid-template-columns: 80px 6fr 6fr;
+}
+
+.investment-summary__avatar{
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.investment-summary__icons {
+  display: flex;
+  place-content: center flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+}
+@media screen and (max-width: 540px) {
+  .investment-summary {
+    grid-template-columns: 1fr;
+  }
+  .investment-summary__icons{
+        place-content: center space-between;
+        align-items: center;
+  }
+  .investment-summary__avatar{
+    height: 100px;
+    width: 100px;
+  }
+}

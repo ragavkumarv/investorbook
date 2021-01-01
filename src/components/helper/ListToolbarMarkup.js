@@ -2,20 +2,16 @@ import React from "react";
 import {
   Plugin,
   Template,
-  TemplatePlaceholder
+  TemplatePlaceholder,
 } from "@devexpress/dx-react-core";
 import Button from "@material-ui/core/Button";
+import "./ListToolbarMarkup.css";
 
 export const ListToolbarMarkup = ({ setOpenEditInvestor, State }) => (
   <Plugin name="customToolbarMarkup">
     <Template name="toolbarContent">
-      <div
-        style={{
-          display: "flex",
-          gap: "14px",
-          alignItems: "center",
-        }}
-      >
+      <div className="toolbar-header">
+        <div className="toolbar-header__action">
         <p style={{ fontWeight: 500, fontSize: "28px", lineHeight: "26px" }}>
           {State.heading}
         </p>
@@ -26,9 +22,9 @@ export const ListToolbarMarkup = ({ setOpenEditInvestor, State }) => (
         >
           {State.addButton}
         </Button>
+        </div>
+        <TemplatePlaceholder className="toolbar-header__search" />
       </div>
-
-      <TemplatePlaceholder />
     </Template>
   </Plugin>
 );

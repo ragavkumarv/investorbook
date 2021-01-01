@@ -38,6 +38,8 @@ import {
 import { Loading } from "./loader/Loading";
 import { DeleteConfirmation } from "./DeleteConfirmation";
 
+import "./CompanyDetails.css";
+
 export const State = {
   addButton: "+ Add Investors",
   heading: "Investors",
@@ -51,24 +53,13 @@ export const State = {
 
 const InvestorSummary = ({ investor, setOpen, removeInvestor }) => {
   return (
-    <div
-      style={{
-        display: "grid",
-        padding: "20px",
-        gridTemplateColumns: "1fr 2fr",
-      }}
-    >
+    <div className="investment-summary">
       <div>
         <p style={{ fontSize: "24px", lineHeight: "22px" }}>{investor.name}</p>
       </div>
       <div
-        style={{
-          display: "flex",
-          placeContent: "center flex-end",
-          alignItems: "center",
-        }}
+      className="investment-summary__icons"
       >
-        <div>
           <Button
             style={{ marginRight: "10px" }}
             onClick={() => setOpen(true)}
@@ -79,7 +70,6 @@ const InvestorSummary = ({ investor, setOpen, removeInvestor }) => {
           <Button onClick={() => removeInvestor()} startIcon={<DeleteIcon />}>
             {State.remove}
           </Button>
-        </div>
       </div>
     </div>
   );

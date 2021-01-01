@@ -1,0 +1,21 @@
+.investment-summary {
+  display: grid;
+  padding: 20px;
+  grid-template-columns: 1fr 2fr;
+}
+
+.investment-summary__icons {
+  display: flex;
+  place-content: center flex-end;
+  align-items: center;
+}
+@media screen and (max-width: 540px) {
+  .investment-summary {
+    grid-template-columns: 1fr;
+  }
+  .investment-summary__icons{
+        place-content: center space-between;
+        align-items: center;
+        flex-wrap: wrap;
+  }
+}

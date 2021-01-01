@@ -9,14 +9,13 @@ import {
   Toolbar,
 } from "@devexpress/dx-react-grid-material-ui";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import { DeleteConfirmation } from "./DeleteConfirmation";
 import { EditInvestor } from "./EditInvestor";
 import {
   ADD_INVESTMENT,
@@ -36,8 +35,7 @@ import {
   PopupEditing,
 } from "./helper";
 import { Loading } from "./loader/Loading";
-
-import { DeleteConfirmation } from './DeleteConfirmation'
+import "./InvestorDetails.css";
 
 export const State = {
   addButton: "+ Add Investments",
@@ -51,11 +49,7 @@ export const State = {
 const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
   return (
     <div
-      style={{
-        display: "grid",
-        padding: "20px",
-        gridTemplateColumns: "80px 6fr 6fr",
-      }}
+    className="investment-summary"
     >
       <div style={{ display: "flex", alignItems: "center" }}>
         <img
@@ -63,17 +57,12 @@ const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
             investor.photo_large ||
             "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQACGFpr0iqURE_6EHYMm-AGXfhXC1Nzf4ucA&usqp=CAU"
           }
-          style={{
-            height: "50px",
-            width: "50px",
-            borderRadius: "50%",
-            margin: "0 auto",
-          }}
+          className="investment-summary__avatar"
           alt="Avatar"
         />
       </div>
       <div>
-        <p style={{ fontSize: "24px", lineHeight: "22px" }}>{investor.name}</p>
+        <p style={{ fontSize: "24px", lineHeight: "22px"  }}>{investor.name}</p>
         <p style={{ fontSize: "15px", lineHeight: "14px" }}>
           Total Amount Invested:{" "}
           {total.toLocaleString("en-US", {
@@ -83,11 +72,7 @@ const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
         </p>
       </div>
       <div
-        style={{
-          display: "flex",
-          placeContent: "center flex-end",
-          alignItems: "center",
-        }}
+        className="investment-summary__icons"
       >
         <Button
           style={{ marginRight: "10px" }}
@@ -194,10 +179,10 @@ export const InvestorDetails = () => {
     photoLarge: "",
   });
 
-  const deleteConfirmInvestor =  async () => {
-     await deleteInvestorMutation({ variables: { id: +INVESTOR_ID } })
-     history.push("/")
-  }
+  const deleteConfirmInvestor = async () => {
+    await deleteInvestorMutation({ variables: { id: +INVESTOR_ID } });
+    history.push("/");
+  };
 
   const removeInvestor = () => {
     setOpenDelete(true);
@@ -284,7 +269,11 @@ export const InvestorDetails = () => {
 
   return (
     <>
-      <DeleteConfirmation setOpen={setOpenDelete} open={openDelete} deleteConfirm={deleteConfirmInvestor}/>
+      <DeleteConfirmation
+        setOpen={setOpenDelete}
+        open={openDelete}
+        deleteConfirm={deleteConfirmInvestor}
+      />
       <Paper style={{ position: "relative" }}>
         <EditInvestor
           open={openEditInvestor}
@@ -347,6 +336,6 @@ export const InvestorDetails = () => {
         </Grid>
         {loading && <Loading />}
       </Paper>
-      </>
+    </>
   );
 };
