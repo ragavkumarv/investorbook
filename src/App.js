@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
-import { CompanyDetails } from "./components/CompanyDetails";
-import { InvestorDetails } from "./components/InvestorDetails";
+import { CompanyDetails } from "./components/CompanyDetail/CompanyDetails";
+import { InvestorDetails } from "./components/InvestorDetails/InvestorDetails";
 import Home from "./Home";
 import IconButton from "@material-ui/core/IconButton";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";

@@ -1,6 +1,6 @@
 export * from './GroupTypeProvider';
 export * from './CurrencyFormatter';
-export * from './ListToolbarMarkup';
+export * from './ListToolbarMarkup/ListToolbarMarkup';
 export * from './HighlightRowOnHover';
 export * from './PopupEditing';
 export * from './DetailToolbarMarkup';

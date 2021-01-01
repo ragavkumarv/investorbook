@@ -15,8 +15,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { DeleteConfirmation } from "./DeleteConfirmation";
-import { EditInvestor } from "./EditInvestor";
+import { DeleteConfirmation } from "../DeleteConfirmation";
+import { EditInvestor } from "../EditInvestor";
 import {
   ADD_INVESTMENT,
   DELETE_INVESTMENT,
@@ -25,7 +25,7 @@ import {
   GET_INVESTOR_DETAIL,
   UPDATE_INVESTMENT,
   UPDATE_INVESTOR,
-} from "./gql";
+} from "../gql";
 import {
   Command,
   CurrencyTypeProvider,
@@ -33,8 +33,8 @@ import {
   EmployeeFormatter,
   Popup,
   PopupEditing,
-} from "./helper";
-import { Loading } from "./loader/Loading";
+} from "../helper";
+import { Loading } from "../loader/Loading";
 import "./InvestorDetails.css";
 
 export const State = {
