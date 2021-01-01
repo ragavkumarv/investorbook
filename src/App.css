@@ -1,8 +1,12 @@
 .App {
-  /* text-align: center; */
-  /* margin: 10px; */
-  padding: 50px;
-  /* max-height: 70vh; */
+  padding: 2vw 6vw;
+}
+
+@media screen and (max-width: 540px) { 
+  .App {
+
+    padding: 0px;
+  }
 }
 
 .App-logo {

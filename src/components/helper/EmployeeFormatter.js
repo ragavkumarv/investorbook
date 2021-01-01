@@ -7,6 +7,7 @@ export const EmployeeFormatter = ({ row }) =>
       display: "flex",
       gap: "14px",
       alignItems: "center",
+      flexWrap : 'wrap'
     }}
   >
     {row.photo_thumbnail || 'investments' in row ? <div>

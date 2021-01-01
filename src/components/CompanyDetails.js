@@ -36,7 +36,7 @@ import {
   PopupEditing,
 } from "./helper";
 import { Loading } from "./loader/Loading";
-import { DeleteConfirmation } from './DeleteConfirmation'
+import { DeleteConfirmation } from "./DeleteConfirmation";
 
 export const State = {
   addButton: "+ Add Investors",
@@ -173,10 +173,10 @@ export const CompanyDetails = () => {
 
   const [openDelete, setOpenDelete] = useState(false);
 
-  const deleteConfirmInvestor =  async () => {
+  const deleteConfirmInvestor = async () => {
     await deleteCompanyMutation({ variables: { id: +COMPANY_ID } });
     history.push("/");
- }
+  };
   const removeCompany = () => {
     setOpenDelete(true);
   };
@@ -251,24 +251,12 @@ export const CompanyDetails = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        placeContent: "flex-start",
-        alignItems: "flex-start",
-        gap: "10px",
-      }}
-    >
-      <IconButton
-        aria-label="back"
-        style={{
-          marginTop: "24px",
-        }}
-        onClick={() => history.goBack()}
-      >
-        <ArrowBackIosIcon fontSize="large" />
-      </IconButton>
-      <DeleteConfirmation setOpen={setOpenDelete} open={openDelete} deleteConfirm={deleteConfirmInvestor}/>
+    <>
+      <DeleteConfirmation
+        setOpen={setOpenDelete}
+        open={openDelete}
+        deleteConfirm={deleteConfirmInvestor}
+      />
       <Paper style={{ position: "relative" }}>
         <EditInvestor
           open={openEditInvestor}
@@ -330,6 +318,6 @@ export const CompanyDetails = () => {
         </Grid>
         {loading && <Loading />}
       </Paper>
-    </div>
+    </>
   );
 };

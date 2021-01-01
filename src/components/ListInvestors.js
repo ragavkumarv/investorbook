@@ -132,7 +132,7 @@ export const ListInvestors = () => {
   };
 
   const [tableColumnExtensions] = useState([
-    { columnName: "name", width: 200 },
+    { columnName: "name", width: '30%',  wordWrapEnabled: true },
     { columnName: "investments", wordWrapEnabled: true },
   ]);
 

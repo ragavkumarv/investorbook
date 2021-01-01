@@ -283,23 +283,7 @@ export const InvestorDetails = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        placeContent: "flex-start",
-        alignItems: "flex-start",
-        gap: "10px",
-      }}
-    >
-      <IconButton
-        aria-label="back"
-        style={{
-          marginTop: "24px",
-        }}
-        onClick={() => history.goBack()}
-      >
-        <ArrowBackIosIcon fontSize="large" />
-      </IconButton>
+    <>
       <DeleteConfirmation setOpen={setOpenDelete} open={openDelete} deleteConfirm={deleteConfirmInvestor}/>
       <Paper style={{ position: "relative" }}>
         <EditInvestor
@@ -363,6 +347,6 @@ export const InvestorDetails = () => {
         </Grid>
         {loading && <Loading />}
       </Paper>
-    </div>
+      </>
   );
 };
