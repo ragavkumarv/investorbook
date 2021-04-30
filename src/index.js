@@ -7,10 +7,15 @@ import * as serviceWorker from "./serviceWorker";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { BrowserRouter } from "react-router-dom";
 
+
 const client = new ApolloClient({
-  uri: "https://electric-kangaroo-87.hasura.app/v1/graphql",
+  uri: process.env.REACT_APP_HASURA_GRAPHQL_URL,
   cache: new InMemoryCache(),
+  headers:{
+    "x-hasura-admin-secret": process.env.REACT_APP_TOKEN
+  }
 });
+
 
 ReactDOM.render(
   <React.StrictMode>

@@ -6,7 +6,8 @@ export const EmployeeFormatter = ({ row }) =>
     style={{
       display: "flex",
       gap: "14px",
-      alignItems: "center",
+      alignItems: "flex-start",
+      placeContent:'center flex-start',
       flexWrap : 'wrap'
     }}
   >

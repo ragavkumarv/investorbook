@@ -90,7 +90,8 @@ const InvestorSummary = ({ investor, total, setOpen, removeInvestor }) => {
 };
 
 export const InvestorDetails = () => {
-  const { id: INVESTOR_ID } = useParams();
+  const { id } = useParams();
+  const INVESTOR_ID  = +id;
   const [columns] = useState(State.columns);
   const history = useHistory();
 

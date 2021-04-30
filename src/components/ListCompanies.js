@@ -49,6 +49,7 @@ export const ListCompanies = () => {
       lineHeight: "11px",
       letterSpacing: "0.07em",
       color: "#797979",
+      border: "aliceblue"
     },
   });
 
@@ -56,6 +57,10 @@ export const ListCompanies = () => {
 
   const cellComponent = (props) => {
     return <TableHeaderRow.Cell {...props} className={classes.headerRow} />;
+  };
+
+  const rowComponent = (props) => {
+    return <TableHeaderRow.Row {...props} className={classes.headerRow} />;
   };
 
   const [pageSizes] = useState([5, 10, 15]);
@@ -144,7 +149,7 @@ export const ListCompanies = () => {
         saveInvestor={saveInvestor}
         groupName="Company"
       />
-      <Grid rows={rows} columns={columns}>
+      <Grid rows={rows} columns={columns} showBorders={false}>
         <DataTypeProvider
           for={employeeColumns}
           formatterComponent={EmployeeFormatter}
@@ -159,7 +164,7 @@ export const ListCompanies = () => {
 
         <Table columnExtensions={tableColumnExtensions} />
 
-        <TableHeaderRow showSortingControls cellComponent={cellComponent} />
+        <TableHeaderRow showSortingControls rowComponent={rowComponent}  cellComponent={cellComponent} />
         <SelectionState />
         <TableSelection
           selectByRowClick

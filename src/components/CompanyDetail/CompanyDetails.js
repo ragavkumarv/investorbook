@@ -76,7 +76,8 @@ const InvestorSummary = ({ investor, setOpen, removeInvestor }) => {
 };
 
 export const CompanyDetails = () => {
-  const { id: COMPANY_ID } = useParams();
+  const { id } = useParams();
+  const COMPANY_ID = +id;
   const [columns] = useState(State.columns);
   const history = useHistory();
 
